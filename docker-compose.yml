@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  dynamodb-local:
+    container_name: dynamodb-local-excel
+    image: amazon/dynamodb-local
+    ports:
+      - '8085:8000'
+    command: -jar DynamoDBLocal.jar -dbPath /data -sharedDb
+    volumes:
+      - ./dynamodb_local:/data # ボリュームマウントができず、バイマウントにした。。。
+    networks:
+      - excel-management
+    restart: unless-stopped
+
+  dynamodb-admin:
+    container_name: dynamodb-admin-excel
+    image: aaronshaf/dynamodb-admin:latest
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+    ports:
+      - 8001:8001
+    depends_on:
+      - dynamodb-local
+    networks:
+      - excel-management
+networks:
+  excel-management:
+    driver: bridge
+
+

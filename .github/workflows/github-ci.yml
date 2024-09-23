@@ -1,0 +1,100 @@
+#name: Build and Deploy
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#permissions:
+#  id-token: write
+#  contents: read
+#
+#jobs:
+#  deploy-to-lambda:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Git clone the repository
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+#          aws-region: ${{ vars.AWS_REGION }}
+#
+#      - name: Install SAM CLI
+#        run: |
+#          pip install aws-sam-cli
+#
+#      - name: Clean S3 bucket if exists
+#        run: |
+#          if aws s3 ls "s3://${{ vars.SAM_BUCKET_NAME }}" 2>&1 | grep -q 'NoSuchBucket'
+#          then
+#            echo "バケット ${{ vars.SAM_BUCKET_NAME }} は存在しません。クリーンアップをスキップします。"
+#          else
+#            echo "バケット ${{ vars.SAM_BUCKET_NAME }} が存在します。クリーンアップを実行します。"
+#            aws s3 rm s3://${{ vars.SAM_BUCKET_NAME }} --recursive
+#          fi
+#
+#      - name: Create S3 bucket if not exists
+#        run: |
+#          if ! aws s3 ls "s3://${{ vars.SAM_BUCKET_NAME }}" 2>&1 | grep -q 'NoSuchBucket'
+#          then
+#            echo "バケット ${{ vars.SAM_BUCKET_NAME }} は既に存在します。"
+#          else
+#            echo "バケット ${{ vars.SAM_BUCKET_NAME }} が存在しません。作成します。"
+#            aws s3 mb s3://${{ vars.SAM_BUCKET_NAME }} --region ${{ vars.AWS_REGION }}
+#          fi
+#
+#      - name: Install SAM CLI
+#        run: |
+#          pip install aws-sam-cli
+#      - name: SAM build
+#        run: sam build
+#        working-directory: ./lambda-register
+#      - name: SAM deploy
+#        run: sam deploy --stack-name ogata-sam-lambda --s3-bucket ${{ vars.SAM_BUCKET_NAME }} --capabilities CAPABILITY_IAM --no-confirm-changeset --no-fail-on-empty-changeset
+#        working-directory: ./lambda-register
+#
+#  build-and-deploy-cloudfront:
+#    needs:
+#      - deploy-to-lambda
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Git clone the repository
+#        uses: actions/checkout@v4
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+#          aws-region: ${{ vars.AWS_REGION }}
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '18'
+#
+#      - name: Install dependencies
+#        run: |
+#          cd cloudfront
+#          npm ci
+#
+#      - name: Build cloudfront
+#        env:
+#          VITE_APIGATEWAY: ${{ vars.PROD_APIGATEWAY_URL }}
+#        run: |
+#          cd cloudfront
+#          npm run build
+#
+#      - name: Deploy to S3
+#        run: |
+#          aws s3 sync cloudfront/dist s3://${{ vars.AWS_S3_BACKET }} --delete
+#
+#      - name: Invalidate CloudFront cache
+#        run: |
+#          aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+#
+#

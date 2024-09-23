@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  cloudfront-lambda-register
+
+  Sample SAM Template for cloudfront-lambda-register
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+  Api:
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      Auth:
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Principal: '*'
+              Action: execute-api:Invoke
+              Resource: execute-api:/*
+              Condition:
+                IpAddress:
+                  aws:SourceIp: '13.114.22.14/32'
+            - Effect: Deny
+              Principal: '*'
+              Action: execute-api:Invoke
+              Resource: execute-api:/*
+              Condition:
+                NotIpAddress:
+                  aws:SourceIp: '13.114.22.14/32'
+      BinaryMediaTypes:
+        - 'multipart/form-data'
+#        - めっちゃ重要。これないとエクセル受け取れない
+
+  PostExcelList:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: postLists.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        postExcelList:
+          Type: Api
+          Properties:
+            Path: /api/lists
+            Method: post
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 15
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/postLists.ts
+
+  GetLists:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: getLists.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        getLists:
+          Type: Api
+          Properties:
+            Path: /api/lists
+            Method: get
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 15
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/getLists.ts
+
+  UpdateAliases:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: updateAliases.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        updateAliases:
+          Type: Api
+          Properties:
+            Path: /api/aliases
+            Method: post
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 15
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/updateAliases.ts
+
+  GetAliases:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: getAliases.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        getAliases:
+          Type: Api
+          Properties:
+            Path: /api/aliases
+            Method: get
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 15
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/getAliases.ts
+
+
+  LambdaUserAllGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: userAllGet.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        userAllGet:
+          Type: Api
+          Properties:
+            Path: /api/users
+            Method: get
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 15
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/userAllGet.ts
+

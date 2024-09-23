@@ -1,0 +1,1 @@
+export const apiGateway = import.meta.env.VITE_APIGATEWAY;
