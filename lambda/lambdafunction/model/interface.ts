@@ -1,10 +1,10 @@
 export enum ColumnName  {
-    LICENCENAME=0,
-    SHORTIDENTIFIER=1,
-    FULLNAME=2,
-    SPDX=3,
-    ORIGINALUSE=7,
-    MODIFIED=8
+    LICENCENAME=1,
+    SHORTIDENTIFIER=2,
+    FULLNAME=3,
+    SPDX=4,
+    ORIGINALUSE=8,
+    MODIFIED=9
 }
 
 export interface ExcelEntity {
