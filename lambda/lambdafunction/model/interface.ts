@@ -8,9 +8,8 @@ export enum ColumnName  {
 }
 
 export interface ExcelEntity {
-    id: string
-    LicenseName: string
-    ShortIdentifier: string
+    licenseName: string
+    shortIdentifier: string
     fullName: string
     spdx: string
     originalUse: string
@@ -20,5 +19,20 @@ export interface ExcelEntity {
 export interface AliasEntity {
     aliasName: string
     originalName: string
-    originalId: string
+}
+
+export enum CSVList {
+    LIBRARYNAME= 0,
+    VERSION= 1,
+    ARIASNAME= 2
+}
+
+export interface TeamListEntity {
+    teamName: string
+    libraryName: string
+    version: string
+    aliasName: string
+    licenseName: string
+    spdx: string
+    originalUse: string
 }

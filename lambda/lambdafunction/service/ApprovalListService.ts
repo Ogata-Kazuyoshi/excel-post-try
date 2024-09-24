@@ -31,9 +31,8 @@ export class DefaultApprovalListService implements ApprovalListService{
         for (const data of jsonDataLists) {
             if (data.length !== 0) {
                 const putList: ExcelEntity = {
-                    id: uuidv4(),
-                    LicenseName: data[ColumnName.LICENCENAME],
-                    ShortIdentifier: data[ColumnName.SHORTIDENTIFIER],
+                    licenseName: data[ColumnName.LICENCENAME],
+                    shortIdentifier: data[ColumnName.SHORTIDENTIFIER],
                     fullName: data[ColumnName.FULLNAME],
                     spdx: data[ColumnName.SPDX],
                     originalUse: data[ColumnName.ORIGINALUSE],
@@ -54,7 +53,7 @@ export class DefaultApprovalListService implements ApprovalListService{
     private async deleteAllData() {
         const scanResults = await this.repository.scanParams()
         for (const item of scanResults.Items) {
-            await this.repository.deleteItem(item.id)
+            await this.repository.deleteItem(item.licenseName)
         }
     }
 

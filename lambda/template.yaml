@@ -73,6 +73,34 @@ Resources:
         EntryPoints:
           - controller/postLists.ts
 
+  PostTeamCSVList:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: postTeamLists.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        postTeamCSVList:
+          Type: Api
+          Properties:
+            Path: /api/teamLists/{teamName}
+            Method: post
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 15
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/postTeamLists.ts
+
   GetLists:
     Type: AWS::Serverless::Function
     Properties:

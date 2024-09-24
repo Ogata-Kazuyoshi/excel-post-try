@@ -9,9 +9,8 @@ import _ from 'lodash'
 
 
 export interface ExcelList {
-    id: string
-    LicenseName: string
-    ShortIdentifier: string
+    licenseName: string
+    shortIdentifier: string
     fullName: string
     spdx: string
     originalUse: string
@@ -25,7 +24,6 @@ export interface TableDisplay extends ExcelList {
 interface RequestBody {
     aliasName: string
     originalName: string
-    originalId: string
 }
 const config: AxiosRequestConfig = {
     headers: {
@@ -49,11 +47,11 @@ export const ExcelListsComponent = () => {
         try {
             const res = await axios.get<ExcelList[]>(`${apiGateway}/api/lists`).then(elm => elm.data)
             const clone = _.cloneDeep(res)
-            const sortedRes = clone.sort((a,b) => a.ShortIdentifier.localeCompare(b.ShortIdentifier))
+            const sortedRes = clone.sort((a,b) => a.shortIdentifier.localeCompare(b.shortIdentifier))
             const aliasLists = await axios.get<RequestBody[]>(`${apiGateway}/api/aliases`).then(elm => elm.data)
             const displayLists: TableDisplay[] = sortedRes.map(elm => ({...elm, aliasName: undefined }))
             aliasLists.forEach(aliasList => {
-                const targetIndex = displayLists.findIndex(displayList => displayList.id === aliasList.originalId)
+                const targetIndex = displayLists.findIndex(displayList => displayList.licenseName === aliasList.originalName)
                 displayLists[targetIndex].aliasName = aliasList.aliasName
             })
             setExcelLists(displayLists)
@@ -64,7 +62,7 @@ export const ExcelListsComponent = () => {
         }
     }
 
-    const handleEditIcon = async (originalName: string, originalId: string) => {
+    const handleEditIcon = async (originalName: string) => {
         const { value: aliasName } = await Swal.fire({
             title: "読み替えライセンス名",
             input: "text",
@@ -75,7 +73,6 @@ export const ExcelListsComponent = () => {
             const request: RequestBody = {
                 aliasName,
                 originalName,
-                originalId
             }
             Swal.fire(`読み替えマスターに登録します ${aliasName}`);
             // const res = await axios.post(`http://localhost:3000/api/aliases`, request, config)
@@ -96,7 +93,6 @@ export const ExcelListsComponent = () => {
             <thead>
             <tr>
                 <th>EditIcon</th>
-                <th>id</th>
                 <th>LicenseName</th>
                 <th>ShortIdentifier</th>
                 <th>aliasName</th>
@@ -108,15 +104,14 @@ export const ExcelListsComponent = () => {
             </thead>
             <tbody>
             {excelLists.map(excelList => {
-                return (<tr key={excelList.id}>
+                return (<tr key={excelList.licenseName}>
                     <td>
                         <EditIcon
-                            onClick={() => {handleEditIcon(excelList.ShortIdentifier, excelList.id)}}
+                            onClick={() => {handleEditIcon(excelList.licenseName)}}
                         />
                     </td>
-                    <td>{excelList.id}</td>
-                    <td>{excelList.LicenseName}</td>
-                    <td>{excelList.ShortIdentifier}</td>
+                    <td>{excelList.licenseName}</td>
+                    <td>{excelList.shortIdentifier}</td>
                     <td>{excelList.aliasName}</td>
                     <td>{excelList.fullName}</td>
                     <td>{excelList.spdx}</td>
