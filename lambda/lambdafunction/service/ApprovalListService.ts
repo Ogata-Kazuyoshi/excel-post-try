@@ -29,16 +29,18 @@ export class DefaultApprovalListService implements ApprovalListService{
 
         const jsonDataLists = this.excelExtractor(tempFilePath);
         for (const data of jsonDataLists) {
-            const putList: ExcelEntity = {
-                id: uuidv4(),
-                LicenseName: data[ColumnName.LICENCENAME],
-                ShortIdentifier: data[ColumnName.SHORTIDENTIFIER],
-                fullName: data[ColumnName.FULLNAME],
-                spdx: data[ColumnName.SPDX],
-                originalUse: data[ColumnName.ORIGINALUSE],
-                modified: data[ColumnName.MODIFIED],
+            if (data.length !== 0) {
+                const putList: ExcelEntity = {
+                    id: uuidv4(),
+                    LicenseName: data[ColumnName.LICENCENAME],
+                    ShortIdentifier: data[ColumnName.SHORTIDENTIFIER],
+                    fullName: data[ColumnName.FULLNAME],
+                    spdx: data[ColumnName.SPDX],
+                    originalUse: data[ColumnName.ORIGINALUSE],
+                    modified: data[ColumnName.MODIFIED],
+                }
+                await this.repository.putItem(putList)
             }
-            await this.repository.putItem(putList)
         }
 
         fs.unlinkSync(tempFilePath);
