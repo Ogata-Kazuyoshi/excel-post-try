@@ -7,7 +7,7 @@ export interface DynamoDBRepository {
     deleteItemByPrimaryKey(deleteRequestByPrimaryKey: DesignatedForPrimaryKey)
     putItem<T>(putList: T)
     getItemByPrimaryKey<T>(getItemByPrimaryKey: DesignatedForPrimaryKey): Promise<T | undefined>
-    queryItemsByPrimaryKey<T>(queryItemsByPrimaryKey: DesignatedForPrimaryKey): Promise<T[]> // 新しいメソッド
+    queryItemsByPrimaryKey<T>(queryItemsByPrimaryKey: DesignatedForPrimaryKey): Promise<T[]>
 }
 
 export class DefaultDynamoDBRepository implements DynamoDBRepository{

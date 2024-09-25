@@ -23,7 +23,8 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
         for (const data of jsonDataLists) {
-            if (data.length !== 0) {
+            const isEmptyRow = data.length === 0
+            if (!isEmptyRow) {
                 const putList: ExcelEntity = {
                     licenseName: data[ColumnName.LICENCENAME],
                     shortIdentifier: data[ColumnName.SHORTIDENTIFIER],

@@ -1,6 +1,6 @@
 import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
-import {CSVList, TeamListEntity} from "../model/interface.ts";
+import {CheckResult, CSVList, TeamListEntity} from "../model/interface.ts";
 import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
 import {TableName, TablePrimaryKey} from "../model/TableInterface";
 import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
@@ -25,7 +25,8 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
         for (const data of jsonDataLists) {
-            if (data.length !== 0) {
+            const isEmptyRow = data.length === 0
+            if (!isEmptyRow) {
                 let licenseName: string
                 let spdx = ""
                 let originalUse = ""
@@ -35,8 +36,8 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
                     primaryKeyName: TablePrimaryKey.ALIASTTABLE,
                     primaryKeyValue: aliasName
                 })
-                licenseName = aliasRecord ? aliasRecord.originalName : "unknown"
-                if (licenseName !== "unknown") {
+                licenseName = aliasRecord ? aliasRecord.originalName : CheckResult.UNKNOWN
+                if (licenseName !== CheckResult.UNKNOWN) {
                     const approvalListRecord = await this.approvalListRepository.getItemByPrimaryKey({
                         primaryKeyName: TablePrimaryKey.APPROVALLIST,
                         primaryKeyValue: aliasRecord!.originalName

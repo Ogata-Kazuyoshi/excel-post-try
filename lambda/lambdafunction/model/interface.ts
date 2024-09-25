@@ -36,3 +36,7 @@ export interface TeamListEntity {
     spdx: string
     originalUse: string
 }
+
+export enum CheckResult {
+    UNKNOWN = 'unknown'
+}
