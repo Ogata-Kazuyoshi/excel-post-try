@@ -1,10 +1,11 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda'
-import {headers} from "../config/dynamodbConfig"
-import {DefaultTeamListService} from "../service/TeamListService";
+import {headers} from "../../config/dynamodbConfig"
+import {DefaultTeamListService} from "../../service/TeamListService";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const teamName = event.pathParameters?.teamName
+
         if (!teamName) {
             return {
                 statusCode: 400,
@@ -13,12 +14,12 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
         }
 
         const teamListService = new DefaultTeamListService()
-        const teamList = await teamListService.getTeamListByName(teamName)
+        await teamListService.resisterToDynamoDB(event, teamName)
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(teamList),
+            body: JSON.stringify("teamListの登録"),
         };
     } catch (err) {
         return {

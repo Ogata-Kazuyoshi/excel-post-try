@@ -38,14 +38,13 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
     }
 
     async readAllData(): Promise<ExcelEntity[]> {
-        const scanResults = await this.repository.scanParams()
-        return scanResults.Items as ExcelEntity[]
+        return await this.repository.scanParams() as ExcelEntity[]
     }
 
     //TODO 一旦使ってないけど、消したい時のイメージとして残しておく
     private async deleteAllData() {
-        const scanResults = await this.repository.scanParams()
-        for (const item of scanResults.Items) {
+        const Items = await this.repository.scanParams() as ExcelEntity[]
+        for (const item of Items) {
             await this.repository.deleteItemByPrimaryKey({
                 primaryKeyName: TablePrimaryKey.APPROVALLIST,
                 primaryKeyValue: item.licenseName

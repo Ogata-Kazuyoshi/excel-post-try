@@ -1,6 +1,6 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import {headers} from "../config/dynamodbConfig";
-import {DefaultApprovalListService} from "../service/ApprovalListService";
+import {headers} from "../../config/dynamodbConfig";
+import {DefaultApprovalListService} from "../../service/ApprovalListService";
 
 export const lambdaHandler = async (_event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {

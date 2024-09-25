@@ -1,16 +1,9 @@
-import {
-    DeleteCommand,
-    GetCommand,
-    PutCommand,
-    QueryCommand,
-    ScanCommand,
-    ScanCommandOutput
-} from "@aws-sdk/lib-dynamodb";
+import {DeleteCommand, GetCommand, PutCommand, QueryCommand, ScanCommand} from "@aws-sdk/lib-dynamodb";
 import {dynamo} from "../config/dynamodbConfig";
 import {TableName} from "../model/TableInterface";
 
 export interface DynamoDBRepository {
-    scanParams():Promise<ScanCommandOutput>
+    scanParams<T>():Promise<T[]>
     deleteItemByPrimaryKey(deleteRequestByPrimaryKey: DesignatedForPrimaryKey)
     putItem<T>(putList: T)
     getItemByPrimaryKey<T>(getItemByPrimaryKey: DesignatedForPrimaryKey): Promise<T | undefined>
@@ -21,10 +14,11 @@ export class DefaultDynamoDBRepository implements DynamoDBRepository{
     constructor(
         private tableName:TableName
     ) {}
-    async scanParams(): Promise<ScanCommandOutput> {
-        return await dynamo.send(new ScanCommand({
+    async scanParams<T>(): Promise<T[]> {
+        const result = await dynamo.send(new ScanCommand({
             TableName: this.tableName
         }))
+        return result.Items as T[]
     }
 
     async deleteItemByPrimaryKey(deleteRequestByPrimaryKey: DesignatedForPrimaryKey) {

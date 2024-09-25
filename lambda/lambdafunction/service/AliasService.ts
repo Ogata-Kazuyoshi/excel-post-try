@@ -3,7 +3,7 @@ import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/Dynam
 import {TableName} from "../model/TableInterface";
 
 export interface AliasService {
-    resisterAlias(record: AliasEntity)
+    resisterToDynamoDB(putList: AliasEntity)
     readAllData(): Promise<AliasEntity[]>
 }
 
@@ -12,13 +12,12 @@ export class DefaultAliasService implements AliasService{
     constructor(
         private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE)
     ) {}
-    async resisterAlias(record: AliasEntity) {
-        await this.repository.putItem(record)
+    async resisterToDynamoDB(putList: AliasEntity) {
+        await this.repository.putItem(putList)
     }
 
     async readAllData(): Promise<AliasEntity[]> {
-        const scanResults = await this.repository.scanParams()
-        return scanResults.Items as AliasEntity[]
+        return await this.repository.scanParams() as AliasEntity[]
     }
 
 }
