@@ -11,3 +11,13 @@ export const pathObject: PathObject = {
 interface PathObject {
     [key: string]: string
 }
+
+export interface TeamListEntity {
+    teamName: string
+    libraryName: string
+    version: string
+    aliasName: string
+    licenseName: string
+    spdx: string
+    originalUse: string
+}

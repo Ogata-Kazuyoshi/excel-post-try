@@ -4,14 +4,14 @@ import path from "path";
 import * as os from "os";
 import * as fs from "fs";
 import * as XLSX from "xlsx";
-import {ColumnName, CSVList, ExcelEntity, TeamListEntity} from "../model/interface.ts";
-import {v4 as uuidv4} from "uuid";
+import {CSVList, ExcelEntity, TeamListEntity} from "../model/interface.ts";
 import {ApprovalListRepository, DefaultApprovalListRepository} from "../repository/ApprovalListRepository";
 import {DefaultTeamListRepository, TeamListRepository} from "../repository/TeamListRepository";
 import {AliasRepository, DefaultAliasRepository} from "../repository/AliasRepository";
 
 export interface TeamListService {
     resisterToDynamoDB(event: APIGatewayProxyEvent, teamName: string)
+    getTeamListByName(teamName: string): Promise<TeamListEntity[]>
     readAllData(): Promise<ExcelEntity[]>
 }
 
@@ -31,7 +31,6 @@ export class DefaultTeamListService implements TeamListService{
 
         console.log({teamName})
 
-        // await this.deleteAllData();
 
         const jsonDataLists = this.excelExtractor(tempFilePath);
         const temp = jsonDataLists[0]
@@ -41,11 +40,9 @@ export class DefaultTeamListService implements TeamListService{
                 let licenseName: string
                 let spdx = ""
                 let originalUse = ""
-                console.log("ここまではきてる")
 
                 const aliasName = data[CSVList.ARIASNAME]
                 const aliasRecord = await this.aliasListRepository.getItemByAliasName(aliasName)
-                console.log('ここまではきてる2')
                 licenseName = aliasRecord ? aliasRecord.originalName : "unknown"
                 console.log({licenseName})
                 console.log({index})
@@ -72,6 +69,10 @@ export class DefaultTeamListService implements TeamListService{
         fs.unlinkSync(tempFilePath);
     }
 
+    async getTeamListByName(teamName: string) {
+        return await this.teamListRepository.queryItemsByPrimaryKey(teamName)
+    }
+
     async readAllData(): Promise<ExcelEntity[]> {
         const scanResults = await this.teamListRepository.scanParams()
         return Promise.resolve(scanResults.Items as ExcelEntity[]);
@@ -90,6 +91,8 @@ export class DefaultTeamListService implements TeamListService{
 
         return XLSX.utils.sheet_to_json(worksheet, {header: 1});
     }
+
+
 
 
 }

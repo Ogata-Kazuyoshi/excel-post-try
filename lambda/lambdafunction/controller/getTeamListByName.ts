@@ -12,6 +12,9 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
     try {
         const teamName = event.pathParameters?.teamName
 
+        console.log({teamName})
+
+
         if (!teamName) {
             return {
                 statusCode: 400,
@@ -20,12 +23,12 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
         }
 
         const teamListService = new DefaultTeamListService()
-        await teamListService.resisterToDynamoDB(event, teamName)
+        const teamList = await teamListService.getTeamListByName(teamName)
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify("teamListの登録"),
+            body: JSON.stringify(teamList),
         };
     } catch (err) {
         return {
