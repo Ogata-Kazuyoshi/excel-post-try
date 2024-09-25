@@ -10,6 +10,6 @@ export enum TablePrimaryKey {
     TEAMLIST = 'teamName'
 }
 
-export enum TableSortLey {
+export enum TableSortKey {
     TEAMLIST = 'libraryName'
 }
