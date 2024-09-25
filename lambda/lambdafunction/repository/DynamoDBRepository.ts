@@ -57,14 +57,14 @@ export class DefaultDynamoDBRepository implements DynamoDBRepository{
 
     async queryItemsByPrimaryKey<T>(queryItemsByPrimaryKey: DesignatedForPrimaryKey): Promise<T[]> {
         const {primaryKeyName, primaryKeyValue} = queryItemsByPrimaryKey
-        const keyConditionExpression = `#${primaryKeyName} = :${primaryKeyName}`
+        const KeyConditionExpression = `#${primaryKeyName} = :${primaryKeyName}`
         const ExpressionAttributeNames = {}
         const ExpressionAttributeValues= {}
         ExpressionAttributeNames[`#${primaryKeyName}`] = primaryKeyName
         ExpressionAttributeValues[`:${primaryKeyName}`] = primaryKeyValue
         const result = await dynamo.send(new QueryCommand({
             TableName: this.tableName,
-            KeyConditionExpression: keyConditionExpression,
+            KeyConditionExpression,
             ExpressionAttributeNames,
             ExpressionAttributeValues
         }))
