@@ -1,33 +1,30 @@
 import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
-import path from "path";
-import * as os from "os";
-import * as fs from "fs";
-import * as XLSX from "xlsx";
 import {ColumnName, ExcelEntity} from "../model/interface.ts";
 import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
 import {TableName, TablePrimaryKey} from "../model/TableInterface";
+import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
 
 export interface ApprovalListService {
     resisterToDynamoDB(event: APIGatewayProxyEvent)
     readAllData(): Promise<ExcelEntity[]>
 }
 
-export class DefaultApprovalListService implements ApprovalListService{
+export class DefaultApprovalListService extends BaseExcelFileExtractor implements ApprovalListService{
 
     constructor(
         private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.APPROVALLIST)
-    ) {}
+    ) {
+        super()
+    }
 
     async resisterToDynamoDB(event: APIGatewayProxyEvent) {
-        const encodedFile = await multipart.parse(event)
-        const file = encodedFile.files.find(file => file.fieldname === 'file')
-        const tempFilePath = path.join(os.tmpdir(), file.filename);
-        fs.writeFileSync(tempFilePath, file.content);
-
         await this.deleteAllData();
 
-        const jsonDataLists = this.excelExtractor(tempFilePath);
+        const encodedFile = await multipart.parse(event)
+        const file = encodedFile.files.find(file => file.fieldname === 'file')
+        const jsonDataLists = this.jsonListsParser(file)
+
         for (const data of jsonDataLists) {
             if (data.length !== 0) {
                 const putList: ExcelEntity = {
@@ -42,14 +39,13 @@ export class DefaultApprovalListService implements ApprovalListService{
             }
         }
 
-        fs.unlinkSync(tempFilePath);
+
     }
 
     async readAllData(): Promise<ExcelEntity[]> {
         const scanResults = await this.repository.scanParams()
         return Promise.resolve(scanResults.Items as ExcelEntity[]);
     }
-
     private async deleteAllData() {
         const scanResults = await this.repository.scanParams()
         for (const item of scanResults.Items) {
@@ -59,13 +55,4 @@ export class DefaultApprovalListService implements ApprovalListService{
             })
         }
     }
-
-    private excelExtractor(tempFilePath: string) {
-        const workbook = XLSX.readFile(tempFilePath);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-        return XLSX.utils.sheet_to_json(worksheet, {header: 1});
-    }
-
-
 }

@@ -11,7 +11,6 @@ export class DefaultAliasService implements AliasService{
 
     constructor(
         private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE)
-        // private repository: AliasRepository = new DefaultAliasRepository()
     ) {}
     async resisterAlias(record: AliasEntity) {
         await this.repository.putItem(record)
