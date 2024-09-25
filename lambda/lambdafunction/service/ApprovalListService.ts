@@ -5,8 +5,8 @@ import * as os from "os";
 import * as fs from "fs";
 import * as XLSX from "xlsx";
 import {ColumnName, ExcelEntity} from "../model/interface.ts";
-import {v4 as uuidv4} from "uuid";
-import {ApprovalListRepository, DefaultApprovalListRepository} from "../repository/ApprovalListRepository";
+import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
+import {TableName, TablePrimaryKey} from "../model/TableInterface";
 
 export interface ApprovalListService {
     resisterToDynamoDB(event: APIGatewayProxyEvent)
@@ -16,8 +16,8 @@ export interface ApprovalListService {
 export class DefaultApprovalListService implements ApprovalListService{
 
     constructor(
-        private repository: ApprovalListRepository = new DefaultApprovalListRepository()
-    ){}
+        private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.APPROVALLIST)
+    ) {}
 
     async resisterToDynamoDB(event: APIGatewayProxyEvent) {
         const encodedFile = await multipart.parse(event)
@@ -53,7 +53,10 @@ export class DefaultApprovalListService implements ApprovalListService{
     private async deleteAllData() {
         const scanResults = await this.repository.scanParams()
         for (const item of scanResults.Items) {
-            await this.repository.deleteItem(item.licenseName)
+            await this.repository.deleteItemByPrimaryKey({
+                primaryKeyName: TablePrimaryKey.APPROVALLIST,
+                primaryKeyValue: item.licenseName
+            })
         }
     }
 

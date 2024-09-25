@@ -1,5 +1,6 @@
 import {AliasEntity} from "../model/interface";
-import {AliasRepository, DefaultAliasRepository} from "../repository/AliasRepository";
+import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
+import {TableName} from "../model/TableInterface";
 
 export interface AliasService {
     resisterAlias(record: AliasEntity)
@@ -8,8 +9,10 @@ export interface AliasService {
 
 export class DefaultAliasService implements AliasService{
 
-    constructor(private repository: AliasRepository = new DefaultAliasRepository()) {
-    }
+    constructor(
+        private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE)
+        // private repository: AliasRepository = new DefaultAliasRepository()
+    ) {}
     async resisterAlias(record: AliasEntity) {
         await this.repository.putItem(record)
     }
