@@ -10,7 +10,6 @@ export interface ExcelFileExtractor {
 
 export abstract class BaseExcelFileExtractor implements ExcelFileExtractor {
     jsonListsParser(file: MultipartFile): string[] {
-
         const tempFilePath = path.join(os.tmpdir(), file.filename);
         fs.writeFileSync(tempFilePath, file.content);
         const jsonDataLists = this.excelExtractor(tempFilePath);
@@ -23,7 +22,7 @@ export abstract class BaseExcelFileExtractor implements ExcelFileExtractor {
         const workbook = XLSX.readFile(tempFilePath);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        return XLSX.utils.sheet_to_json(worksheet, {header: 1});
+        return XLSX.utils.sheet_to_json(worksheet, {header: 1, raw: true});
     }
 
 }

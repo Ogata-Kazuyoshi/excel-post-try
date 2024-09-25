@@ -19,11 +19,8 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
     }
 
     async resisterToDynamoDB(event: APIGatewayProxyEvent) {
-        await this.deleteAllData();
-
-        const encodedFile = await multipart.parse(event)
-        const file = encodedFile.files.find(file => file.fieldname === 'file')
-        const jsonDataLists = this.jsonListsParser(file)
+        const encodedFile = (await multipart.parse(event)).files[0]
+        const jsonDataLists = this.jsonListsParser(encodedFile)
 
         for (const data of jsonDataLists) {
             if (data.length !== 0) {
@@ -38,14 +35,14 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
                 await this.repository.putItem(putList)
             }
         }
-
-
     }
 
     async readAllData(): Promise<ExcelEntity[]> {
         const scanResults = await this.repository.scanParams()
-        return Promise.resolve(scanResults.Items as ExcelEntity[]);
+        return scanResults.Items as ExcelEntity[]
     }
+
+    //TODO 一旦使ってないけど、消したい時のイメージとして残しておく
     private async deleteAllData() {
         const scanResults = await this.repository.scanParams()
         for (const item of scanResults.Items) {

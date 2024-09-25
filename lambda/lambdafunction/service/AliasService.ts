@@ -18,7 +18,7 @@ export class DefaultAliasService implements AliasService{
 
     async readAllData(): Promise<AliasEntity[]> {
         const scanResults = await this.repository.scanParams()
-        return Promise.resolve(scanResults.Items as AliasEntity[]);
+        return scanResults.Items as AliasEntity[]
     }
 
 }
