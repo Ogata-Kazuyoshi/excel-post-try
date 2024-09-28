@@ -8,6 +8,7 @@ import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
 export interface TeamListService {
     resisterToDynamoDB(event: APIGatewayProxyEvent, teamName: string)
     getTeamListByName(teamName: string): Promise<TeamListEntity[]>
+    getTeamNames(): Promise<string[]>
 }
 
 export class DefaultTeamListService extends BaseExcelFileExtractor implements TeamListService{
@@ -66,5 +67,12 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
             primaryKeyName: TablePrimaryKey.TEAMLIST,
             primaryKeyValue: teamName
         }) as TeamListEntity[]
+    }
+
+    async getTeamNames(): Promise<string[]> {
+        const teamListRecords = await this.teamListRepository.scanParams() as TeamListEntity[]
+        const teamNameLists = teamListRecords.map(teamListRecord => teamListRecord.teamName)
+        const uniqueTeamName = [...new Set(teamNameLists)];
+        return uniqueTeamName
     }
 }

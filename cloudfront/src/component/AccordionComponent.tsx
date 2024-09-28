@@ -4,7 +4,7 @@ import MuiAccordion, {AccordionProps} from '@mui/material/Accordion';
 import MuiAccordionSummary, {AccordionSummaryProps,} from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import {DisplaySortedByAliasName} from "../pages/TeamLists.tsx";
+import {DisplaySortedByAliasName} from "../model/TeamLicenceList.ts";
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
     border: `1px solid ${theme.palette.divider}`,
@@ -54,7 +54,13 @@ export default function CustomizedAccordions(
                 return (
                     <Accordion expanded={expanded === `${displayAlias.aliasName}`} onChange={handleChange(`${displayAlias.aliasName}`)} key={displayAlias.aliasName}>
                         <AccordionSummary aria-controls=" " id=" ">
-                            <Typography>{`${displayAlias.aliasName} : ${displayAlias.spdx} : ${displayAlias.originalUse}`}</Typography>
+                            <div>
+
+                            <button onClick={()=> {console.log("わんわん")}}>ここ押せわんわん</button>
+                            <Typography>
+                                {`${displayAlias.aliasName} : ${displayAlias.spdx} : ${displayAlias.originalUse}`}
+                            </Typography>
+                            </div>
                         </AccordionSummary>
                         <AccordionDetails>
                             {displayAlias.displayLibraries.map(elm => {

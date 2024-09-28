@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 import Swal from 'sweetalert2';
 import { apiGateway } from '../config/ReadEnv.ts';
-import { TeamListEntity } from '../model/RouteType.ts';
 import classes from '../component/ExcelListsComponent.module.scss';
 import CustomizedAccordions from '../component/AccordionComponent.tsx';
+import {VerticalNabs} from "../component/VerticalNab.tsx";
+import {useSetRecoilState} from "recoil";
+import {teamNameListState} from "../recoil/RecoilStates.ts";
+import {DisplaySortedByAliasName, DisplaySortedByAliasNameFixture, TeamRawList} from "../model/TeamLicenceList.ts";
 
 export interface AliasDetail {
   licenseName: string;
@@ -17,21 +20,18 @@ export interface SortByAliasName {
   [key: string]: AliasDetail;
 }
 
-export interface DisplaySortedByAliasName {
-  aliasName: string;
-  originalUse: string;
-  spdx: string;
-  displayLibraries: string[];
-}
+
 
 export const TeamLists = () => {
   const [file, setFile] = useState<File | undefined>(undefined);
-  const [teamList, setTeamList] = useState<TeamListEntity[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState('personal');
+  const [teamList, setTeamList] = useState<TeamRawList[]>([]);
   const [displaySortedByAliasName, setDisplaySortedByAliasName] = useState<
     DisplaySortedByAliasName[]
   >([]);
   const [isShowAccordion, setIsShowAccordion] = useState(false);
+
+
+  const setTeamNameList = useSetRecoilState(teamNameListState)
 
   const config: AxiosRequestConfig = {
     headers: {
@@ -76,7 +76,7 @@ export const TeamLists = () => {
     });
     try {
       const res = await axios
-        .get<TeamListEntity[]>(`${apiGateway}/api/teamLists/personal`)
+        .get<TeamRawList[]>(`${apiGateway}/api/teamLists/personal`)
         .then((elm) => elm.data);
       console.log({ res });
       setTeamList(res);
@@ -116,33 +116,46 @@ export const TeamLists = () => {
     }
   };
 
+  useEffect(() => {
+    axios.get<string[]>(`${apiGateway}/api/teamLists`)
+        .then(elm => setTeamNameList(elm.data))
+  }, []);
+
+  const teamNameGet = async () => {
+    const res = await axios.get<string[]>(`${apiGateway}/api/teamLists`).then(elm => elm.data)
+    console.log({res})
+  }
+
   return (
-    <>
-      {isShowAccordion && (
-        <CustomizedAccordions
-          displaySortedByAliasName={displaySortedByAliasName}
-        />
-      )}
-      <div>ここにはチームの情報が格納されます</div>
-      <div>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => {
-            if (e.target.files) {
-              setFile(e.target.files![0]);
-            }
-          }}
-        />
-        <button onClick={handleFileUpload}>
-          チームのリストcsvをアップロード
-        </button>
-      </div>
-      <div>
-        <button onClick={teamListGet}>TeamListをゲットします</button>
-      </div>
-      <table className={classes.listTable}>
-        <thead>
+      <>
+        {isShowAccordion && (
+            <CustomizedAccordions
+                displaySortedByAliasName={displaySortedByAliasName}
+            />
+        )}
+        <div>ここにはチームの情報が格納されます</div>
+        <div>
+          <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                if (e.target.files) {
+                  setFile(e.target.files![0]);
+                }
+              }}
+          />
+          <button onClick={handleFileUpload}>
+            チームのリストcsvをアップロード
+          </button>
+        </div>
+        <div>
+          <button onClick={teamListGet}>TeamListをゲットします</button>
+        </div>
+        <div>
+          <button onClick={teamNameGet}>TeamNameをゲットします</button>
+        </div>
+        <table className={classes.listTable}>
+          <thead>
           <tr>
             <th>teamName</th>
             <th>libraryName</th>
@@ -152,24 +165,25 @@ export const TeamLists = () => {
             <th>spdx</th>
             <th>originalUse</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           {teamList.map((teamDetail) => {
             return (
-              <tr key={teamDetail.libraryName}>
-                <td>{teamDetail.teamName}</td>
-                <td>{teamDetail.libraryName}</td>
-                <td>{teamDetail.version}</td>
-                <td>{teamDetail.aliasName}</td>
-                <td>{teamDetail.licenseName}</td>
-                <td>{teamDetail.spdx}</td>
-                <td>{teamDetail.originalUse}</td>
-              </tr>
+                <tr key={teamDetail.libraryName}>
+                  <td>{teamDetail.teamName}</td>
+                  <td>{teamDetail.libraryName}</td>
+                  <td>{teamDetail.version}</td>
+                  <td>{teamDetail.aliasName}</td>
+                  <td>{teamDetail.licenseName}</td>
+                  <td>{teamDetail.spdx}</td>
+                  <td>{teamDetail.originalUse}</td>
+                </tr>
             );
           })}
-        </tbody>
-      </table>
-    </>
+          </tbody>
+        </table>
+        <VerticalNabs />
+      </>
   );
 };
 
@@ -190,16 +204,4 @@ export class AliasDetailFixture {
   }
 }
 
-export class DisplaySortedByAliasNameFixture {
-  static build(
-    overrides: Partial<DisplaySortedByAliasName> = {}
-  ): DisplaySortedByAliasName {
-    return {
-      aliasName: '',
-      originalUse: '',
-      spdx: '',
-      displayLibraries: '',
-      ...overrides,
-    };
-  }
-}
+

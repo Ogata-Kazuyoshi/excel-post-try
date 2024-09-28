@@ -4,6 +4,7 @@ import {ApprovalLists} from "./pages/ApprovalLists.tsx";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import {TeamLists} from "./pages/TeamLists.tsx";
 import {useEffect} from "react";
+import {TeamAreaComponent} from "./pages/TeamAreaComponent.tsx";
 
 
 function App() {
@@ -21,7 +22,8 @@ function App() {
             <Routes>
                 <Route path="app" element={<LabelTabs />}>
                     <Route path="lists" element={<ApprovalLists />} />
-                    <Route path="teams" element={<TeamLists />} />
+                    <Route path="teams" element={<TeamAreaComponent />} />
+                    <Route path="team-list" element={<TeamLists />} />
                 </Route>
             </Routes>
             {/*<ApprovalLists />*/}

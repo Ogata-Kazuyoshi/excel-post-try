@@ -5,6 +5,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import {Outlet, useNavigate} from "react-router-dom";
 import {pathObject, RouteType} from "../model/RouteType.ts";
+import "./LabelTabs.scss"
 
 
 export const LabelTabs =() => {
@@ -20,17 +21,15 @@ export const LabelTabs =() => {
 
     return (
         <>
-            <Box sx={{ width: '100%', typography: 'body1' }}>
+            <Box sx={{width: '100%', typography: 'body1' }}>
                 <TabContext value={path}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <TabList onChange={handleChange} aria-label="lab API tabs example">
                             <Tab label="Lists" value={RouteType.LISTS} />
                             <Tab label="TeamLists" value={RouteType.TEAMS} />
+                            <Tab label="Team-list" value={RouteType.TEAMLIST} />
                         </TabList>
                     </Box>
-                    {/*<TabPanel value="1">Item One</TabPanel>*/}
-                    {/*<TabPanel value="2">Item Two</TabPanel>*/}
-                    {/*<TabPanel value="3">Item Three</TabPanel>*/}
                 </TabContext>
             </Box>
             <Outlet />

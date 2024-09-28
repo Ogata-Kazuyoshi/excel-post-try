@@ -70,7 +70,7 @@ excel-post:
 
 create-license:
 	cd cloudfront && license_finder report --format=csv --save=../licenses.csv
-	curl -X POST http://localhost:3000/api/teamLists/tempTeam -v \
+	curl -X POST http://localhost:3000/api/teamLists/tempTeam2 -v \
              -F "file=@./licenses.csv"
 
 create-team-list:
