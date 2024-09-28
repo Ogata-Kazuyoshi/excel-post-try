@@ -1,0 +1,27 @@
+.summaryArea {
+  background-color: azure;
+  height: 50px !important;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+
+  .summaryText {
+    font-weight: bold;
+  }
+}
+
+.approvalStatusOK {
+  background-color: deepskyblue;
+}
+
+.approvalStatusOKAsta {
+  background-color: #747bff;
+}
+
+.approvalStatusNeedStudy {
+  background-color: lightgoldenrodyellow;
+}
+
+.approvalStatusNoExisting {
+  background-color: palevioletred;
+}

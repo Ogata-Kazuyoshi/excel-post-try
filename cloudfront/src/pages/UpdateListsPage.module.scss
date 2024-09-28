@@ -1,0 +1,27 @@
+.updateArea {
+  height: calc(100vh - 70px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > div {
+    width: 500px;
+    display: flex;
+    gap: 50px;
+    border: 1px solid black;
+    border-radius: 20px;
+    padding: 20px;
+    flex-direction: column;
+    > div {
+      h1 {
+        text-align: center;
+      }
+    }
+  }
+
+}
+
+.teamNameInputArea {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}

@@ -5,10 +5,10 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import {Outlet, useNavigate} from "react-router-dom";
 import {pathObject, RouteType} from "../model/RouteType.ts";
-import "./LabelTabs.scss"
+import "./HeaderComponent.scss"
 
 
-export const LabelTabs =() => {
+export const HeaderComponent =() => {
     const [path, setPath] = useState<string>('1');
     const navigate = useNavigate()
 
@@ -16,8 +16,6 @@ export const LabelTabs =() => {
         setPath(pathValue);
         navigate(`/app/${pathObject[pathValue]}`)
     };
-
-
 
     return (
         <>
@@ -27,7 +25,7 @@ export const LabelTabs =() => {
                         <TabList onChange={handleChange} aria-label="lab API tabs example">
                             <Tab label="Lists" value={RouteType.LISTS} />
                             <Tab label="TeamLists" value={RouteType.TEAMS} />
-                            <Tab label="Team-list" value={RouteType.TEAMLIST} />
+                            <Tab label="UpdateLists" value={RouteType.UPDATELISTS} />
                         </TabList>
                     </Box>
                 </TabContext>

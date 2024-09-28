@@ -5,26 +5,13 @@ import {apiGateway} from "../config/ReadEnv.ts";
 import EditIcon from '@mui/icons-material/Edit';
 import Swal from "sweetalert2"
 import _ from 'lodash'
+import {ResponseAliasList, ResponseApprovalList, TableDisplay} from "../model/HttpInterface.ts";
 
 
 
-export interface ExcelList {
-    licenseName: string
-    shortIdentifier: string
-    fullName: string
-    spdx: string
-    originalUse: string
-    modified: string
-}
 
-export interface TableDisplay extends ExcelList {
-    aliasName?: string
-}
 
-interface RequestBody {
-    aliasName: string
-    originalName: string
-}
+
 const config: AxiosRequestConfig = {
     headers: {
         'Content-Type': 'application/json',
@@ -45,10 +32,10 @@ export const ExcelListsComponent = () => {
         });
 
         try {
-            const res = await axios.get<ExcelList[]>(`${apiGateway}/api/lists`).then(elm => elm.data)
+            const res = await axios.get<ResponseApprovalList[]>(`${apiGateway}/api/lists`).then(elm => elm.data)
             const clone = _.cloneDeep(res)
             const sortedRes = clone.sort((a,b) => a.shortIdentifier.localeCompare(b.shortIdentifier))
-            const aliasLists = await axios.get<RequestBody[]>(`${apiGateway}/api/aliases`).then(elm => elm.data)
+            const aliasLists = await axios.get<ResponseAliasList[]>(`${apiGateway}/api/aliases`).then(elm => elm.data)
             const displayLists: TableDisplay[] = sortedRes.map(elm => ({...elm, aliasName: undefined }))
             aliasLists.forEach(aliasList => {
                 const targetIndex = displayLists.findIndex(displayList => displayList.licenseName === aliasList.originalName)
@@ -70,7 +57,7 @@ export const ExcelListsComponent = () => {
             showCancelButton: true,
         });
         if (aliasName) {
-            const request: RequestBody = {
+            const request: ResponseAliasList = {
                 aliasName,
                 originalName,
             }

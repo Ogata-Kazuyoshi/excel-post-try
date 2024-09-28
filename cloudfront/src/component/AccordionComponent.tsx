@@ -1,50 +1,16 @@
-import * as React from 'react';
-import {styled} from '@mui/material/styles';
-import MuiAccordion, {AccordionProps} from '@mui/material/Accordion';
-import MuiAccordionSummary, {AccordionSummaryProps,} from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import {DisplaySortedByAliasName} from "../model/TeamLicenceList.ts";
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import {useRecoilValue} from "recoil";
+import {sortedByAliasListsState} from "../recoil/RecoilStates.ts";
+import classes from "./AccordingComponent.module.scss"
+import {ApprovalColorName} from "../model/TeamLicenceList.ts";
+import {SyntheticEvent, useState} from "react";
 
-const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
-    border: `1px solid ${theme.palette.divider}`,
-    '&:not(:last-child)': {
-        borderBottom: 0,
-    },
-    '&::before': {
-        display: 'none',
-    },
-}));
-
-const AccordionSummary = styled(MuiAccordionSummary)<AccordionSummaryProps>(({ theme }) => ({
-    backgroundColor: 'rgba(0, 0, 0, .03)',
-    flexDirection: 'row-reverse',
-    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-        transform: 'rotate(90deg)',
-    },
-    '& .MuiAccordionSummary-content': {
-        marginLeft: theme.spacing(1),
-    },
-    ...theme.applyStyles('dark', {
-        backgroundColor: 'rgba(255, 255, 255, .05)',
-    }),
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-    padding: theme.spacing(2),
-    borderTop: '1px solid rgba(0, 0, 0, .125)',
-}));
-
-type Props = {
-    displaySortedByAliasName: DisplaySortedByAliasName[]
-}
-export default function CustomizedAccordions(
-    {
-        displaySortedByAliasName
-    }: Props) {
-    const [expanded, setExpanded] = React.useState<string | false>('');
+export const AccordionComponent = () => {
+    const [expanded, setExpanded] = useState<string | false>('');
+    const displaySortedByAliasName = useRecoilValue(sortedByAliasListsState)
     const handleChange =
-        (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+        (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
             setExpanded(newExpanded ? panel : false);
         };
 
@@ -52,25 +18,36 @@ export default function CustomizedAccordions(
         <div>
             {displaySortedByAliasName.map(displayAlias => {
                 return (
-                    <Accordion expanded={expanded === `${displayAlias.aliasName}`} onChange={handleChange(`${displayAlias.aliasName}`)} key={displayAlias.aliasName}>
-                        <AccordionSummary aria-controls=" " id=" ">
-
-                            <Typography>
-                                {`${displayAlias.aliasName} : ${displayAlias.spdx} : ${displayAlias.originalUse}`}
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {displayAlias.displayLibraries.map(elm => {
+                    <MuiAccordion expanded={expanded === `${displayAlias.aliasName}`} onChange={handleChange(`${displayAlias.aliasName}`)} key={`${displayAlias.aliasName}-${displayAlias.licenseName}`}>
+                        <MuiAccordionSummary className={`${classes.summaryArea} ${checkApprovalColor(displayAlias.originalUse)}`}>
+                            <div className={classes.summaryText}>
+                                {`${displayAlias.aliasName} : ${displayAlias.licenseName} : ${displayAlias.spdx} : ${displayAlias.originalUse}`}
+                            </div>
+                        </MuiAccordionSummary>
+                            {displayAlias.displayLibraries.map((library, i) => {
                                 return (
-                                    <Typography key={elm}>
-                                        {elm}
-                                    </Typography>
+                                    <div key={`${library}-${i}`}>
+                                        {library}
+                                    </div>
                                 )
                             })}
-                        </AccordionDetails>
-                    </Accordion>
+                    </MuiAccordion>
                 )
             })}
         </div>
     );
+}
+const checkApprovalColor = (originalUse: string): string => {
+    switch (originalUse) {
+        case ApprovalColorName.OK:
+            return classes.approvalStatusOK
+        case ApprovalColorName.OKASTA:
+            return classes.approvalStatusOKAsta
+        case ApprovalColorName.NEEDSTUDY:
+            return classes.approvalStatusNeedStudy
+        case ApprovalColorName.UNKNOWN:
+            return classes.approvalStatusNoExisting
+        default:
+            return ''
+    }
 }

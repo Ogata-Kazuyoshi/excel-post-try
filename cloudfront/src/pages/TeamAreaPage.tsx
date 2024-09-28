@@ -1,4 +1,4 @@
-import {VerticalNabs} from "../component/VerticalNab.tsx";
+import {VerticalNabs} from "../component/VerticalNabComponent.tsx";
 import {TeamLicenseListComponent} from "../component/TeamLicenseListComponent.tsx";
 import classes from "./TeamAreaComponent.module.scss"
 import {DefaultTeamServise, TeamServise} from "../servise/TeamServise.ts";
@@ -9,7 +9,7 @@ import {selectedTeamState, teamNameListState} from "../recoil/RecoilStates.ts";
 type Props = {
     teamService?: TeamServise
 }
-export const TeamAreaComponent = (
+export const TeamAreaPage = (
     {
         teamService = new DefaultTeamServise()
     }: Props

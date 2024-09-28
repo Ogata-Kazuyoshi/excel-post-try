@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {selectedTeamState, teamNameListState} from "../recoil/RecoilStates.ts";
-import "./LabelTabs.scss"
+import "./HeaderComponent.scss"
 
 
 export const VerticalNabs =() => {

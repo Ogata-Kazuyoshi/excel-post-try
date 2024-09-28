@@ -1,19 +1,27 @@
 export interface DisplaySortedByAliasName {
-    aliasName: string;
-    originalUse: string;
-    spdx: string;
-    displayLibraries: string[];
+    aliasName: string
+    licenseName: string
+    originalUse: string
+    spdx: string
+    displayLibraries: string[]
 }
 
 export interface AliasDetail {
-    licenseName: string;
-    version: string;
-    spdx: string;
-    originalUse: string;
-    libraries: string[];
+    licenseName: string
+    version: string
+    spdx: string
+    originalUse: string
+    libraries: string[]
 }
 export interface SortByAliasName {
     [key: string]: AliasDetail;
+}
+
+export enum ApprovalColorName {
+    OK = 'OK',
+    OKASTA = 'OK※',
+    NEEDSTUDY = '要検討',
+    UNKNOWN = ''
 }
 
 
@@ -23,6 +31,7 @@ export class DisplaySortedByAliasNameFixture {
     ): DisplaySortedByAliasName {
         return {
             aliasName: '',
+            licenseName: '',
             originalUse: '',
             spdx: '',
             displayLibraries: [],

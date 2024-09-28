@@ -1,7 +1,8 @@
-import {useRecoilState, useRecoilValue} from "recoil";
+import {useRecoilValue, useSetRecoilState} from "recoil";
 import {selectedTeamState, sortedByAliasListsState} from "../recoil/RecoilStates.ts";
 import {DefaultTeamServise, TeamServise} from "../servise/TeamServise.ts";
-import CustomizedAccordions from "./AccordionComponent.tsx";
+import {AccordionComponent} from "./AccordionComponent.tsx";
+import classes from "./TeamLicenseListComponent.module.scss"
 
 type Props = {
     teamService?: TeamServise
@@ -12,17 +13,13 @@ export const TeamLicenseListComponent = (
         teamService = new DefaultTeamServise()
     }: Props
 ) => {
-    const [sortedByAliasLists,setSortedByAliasLists] = useRecoilState(sortedByAliasListsState)
+    const setSortedByAliasLists = useSetRecoilState(sortedByAliasListsState)
     const selectedTeam = useRecoilValue(selectedTeamState)
 
-    const sortByAliasName = async () => {
-        const sortedLists = await teamService!.getTeamLicenseList(selectedTeam)
-        setSortedByAliasLists(sortedLists)
-    }
-    sortByAliasName()
+    teamService!.getTeamLicenseList(selectedTeam).then(res => setSortedByAliasLists(res))
     return <>
-        <div>
-            <CustomizedAccordions displaySortedByAliasName={sortedByAliasLists} />
+        <div className={classes.teamLicenseArea}>
+            <AccordionComponent />
         </div>
     </>
 }

@@ -1,0 +1,23 @@
+.inputTag {
+       height: 0;
+       overflow: hidden;
+       position: absolute;
+       bottom: 0;
+       left: 0;
+}
+
+.uploadArea {
+       margin-top: 10px;
+       width: 100%;
+       display: flex;
+       flex-direction: column;
+       gap: 16px;
+       .uploadButtonArea {
+              height: 36px;
+       }
+
+       .sendButtonArea {
+              height: 36px;
+       }
+}
+

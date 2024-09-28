@@ -1,10 +1,6 @@
 import {DefaultTeamRepository} from "../repository/TeamRepository.ts";
-import {
-    AliasDetailFixture,
-    DisplaySortedByAliasName,
-    DisplaySortedByAliasNameFixture,
-    SortByAliasName
-} from "../model/TeamLicenceList.ts";
+import {DisplaySortedByAliasName, SortByAliasName} from "../model/TeamLicenceList.ts";
+import {ResponceTeamRawList} from "../model/HttpInterface.ts";
 
 export interface TeamServise {
     getTeamNames(): Promise<string[]>
@@ -22,31 +18,35 @@ export class DefaultTeamServise implements TeamServise {
 
     async getTeamLicenseList(teamName: string): Promise<DisplaySortedByAliasName[]>{
         const teamLicenseRawLists = await this.teamRepository.getTeamLicenseRawLists(teamName)
-        const sortByAliasName: SortByAliasName = {};
-        const aliasNameLists: string[] = [];
-        teamLicenseRawLists.forEach((elm) => {
-            const aliasName = elm.aliasName;
-            console.log({ aliasName });
-            if (!sortByAliasName[aliasName]) {
-                sortByAliasName[aliasName] = AliasDetailFixture.build({
-                    licenseName: elm.licenseName,
-                    version: elm.version,
-                    spdx: elm.spdx,
-                    originalUse: elm.originalUse,
-                });
-                aliasNameLists.push(aliasName);
-            }
-            sortByAliasName[aliasName].libraries.push(elm.libraryName);
-        });
-        const result = aliasNameLists.map((currentAliasName) => {
-            const temp = DisplaySortedByAliasNameFixture.build({
+        const {sortByAliasName, aliasNameLists} = this.createAliasLists(teamLicenseRawLists);
+        return  aliasNameLists.map((currentAliasName) =>  ({
                 aliasName: currentAliasName,
+                licenseName: sortByAliasName[currentAliasName].licenseName,
                 originalUse: sortByAliasName[currentAliasName].originalUse,
                 spdx: sortByAliasName[currentAliasName].spdx,
                 displayLibraries: sortByAliasName[currentAliasName].libraries,
-            });
-            return temp;
+            })
+        )
+    }
+
+    private createAliasLists(teamLicenseRawLists: ResponceTeamRawList[]) {
+        const sortByAliasName: SortByAliasName = {};
+        const aliasNameLists: string[] = [];
+        teamLicenseRawLists.forEach((teamLicenseRawList) => {
+            const aliasName = teamLicenseRawList.aliasName;
+            if (!sortByAliasName[aliasName]) {
+                sortByAliasName[aliasName] = {
+                    licenseName: teamLicenseRawList.licenseName,
+                    version: teamLicenseRawList.version,
+                    spdx: teamLicenseRawList.spdx,
+                    originalUse: teamLicenseRawList.originalUse,
+                    libraries: [teamLicenseRawList.libraryName]
+                }
+                aliasNameLists.push(aliasName);
+            } else {
+                sortByAliasName[aliasName].libraries.push(teamLicenseRawList.libraryName);
+            }
         });
-        return result
+        return {sortByAliasName, aliasNameLists};
     }
 }

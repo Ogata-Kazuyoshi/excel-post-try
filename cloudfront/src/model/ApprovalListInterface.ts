@@ -1,0 +1,4 @@
+export enum ExcelType {
+    APPROVALLIST = 'APPROVALLIST',
+    LICENSEFINDER = 'LISENCEFINDER'
+}
