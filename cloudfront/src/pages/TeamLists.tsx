@@ -1,30 +1,24 @@
 import {useEffect, useState} from 'react';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, {AxiosRequestConfig} from 'axios';
 import Swal from 'sweetalert2';
-import { apiGateway } from '../config/ReadEnv.ts';
+import {apiGateway} from '../config/ReadEnv.ts';
 import classes from '../component/ExcelListsComponent.module.scss';
 import CustomizedAccordions from '../component/AccordionComponent.tsx';
 import {VerticalNabs} from "../component/VerticalNab.tsx";
 import {useSetRecoilState} from "recoil";
 import {teamNameListState} from "../recoil/RecoilStates.ts";
-import {DisplaySortedByAliasName, DisplaySortedByAliasNameFixture, TeamRawList} from "../model/TeamLicenceList.ts";
-
-export interface AliasDetail {
-  licenseName: string;
-  version: string;
-  spdx: string;
-  originalUse: string;
-  libraries: string[];
-}
-export interface SortByAliasName {
-  [key: string]: AliasDetail;
-}
-
+import {
+  AliasDetailFixture,
+  DisplaySortedByAliasName,
+  DisplaySortedByAliasNameFixture,
+  SortByAliasName,
+} from "../model/TeamLicenceList.ts";
+import {ResponceTeamRawList} from "../model/HttpInterface.ts";
 
 
 export const TeamLists = () => {
   const [file, setFile] = useState<File | undefined>(undefined);
-  const [teamList, setTeamList] = useState<TeamRawList[]>([]);
+  const [teamList, setTeamList] = useState<ResponceTeamRawList[]>([]);
   const [displaySortedByAliasName, setDisplaySortedByAliasName] = useState<
     DisplaySortedByAliasName[]
   >([]);
@@ -76,7 +70,7 @@ export const TeamLists = () => {
     });
     try {
       const res = await axios
-        .get<TeamRawList[]>(`${apiGateway}/api/teamLists/personal`)
+        .get<ResponceTeamRawList[]>(`${apiGateway}/api/teamLists/personal`)
         .then((elm) => elm.data);
       console.log({ res });
       setTeamList(res);
@@ -191,17 +185,5 @@ const createLibrariesText = (libraries: string[]) => {
   return libraries.join('<br/>');
 };
 
-export class AliasDetailFixture {
-  static build(overrides: Partial<AliasDetail> = {}): AliasDetail {
-    return {
-      licenseName: '',
-      version: '',
-      spdx: '',
-      originalUse: '',
-      libraries: [],
-      ...overrides,
-    };
-  }
-}
 
 

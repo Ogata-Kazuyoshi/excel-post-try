@@ -5,15 +5,17 @@ export interface DisplaySortedByAliasName {
     displayLibraries: string[];
 }
 
-export interface TeamRawList {
-    teamName: string
-    libraryName: string
-    version: string
-    aliasName: string
-    licenseName: string
-    spdx: string
-    originalUse: string
+export interface AliasDetail {
+    licenseName: string;
+    version: string;
+    spdx: string;
+    originalUse: string;
+    libraries: string[];
 }
+export interface SortByAliasName {
+    [key: string]: AliasDetail;
+}
+
 
 export class DisplaySortedByAliasNameFixture {
     static build(
@@ -24,6 +26,19 @@ export class DisplaySortedByAliasNameFixture {
             originalUse: '',
             spdx: '',
             displayLibraries: [],
+            ...overrides,
+        };
+    }
+}
+
+export class AliasDetailFixture {
+    static build(overrides: Partial<AliasDetail> = {}): AliasDetail {
+        return {
+            licenseName: '',
+            version: '',
+            spdx: '',
+            originalUse: '',
+            libraries: [],
             ...overrides,
         };
     }

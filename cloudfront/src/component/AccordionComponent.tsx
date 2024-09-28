@@ -54,13 +54,10 @@ export default function CustomizedAccordions(
                 return (
                     <Accordion expanded={expanded === `${displayAlias.aliasName}`} onChange={handleChange(`${displayAlias.aliasName}`)} key={displayAlias.aliasName}>
                         <AccordionSummary aria-controls=" " id=" ">
-                            <div>
 
-                            <button onClick={()=> {console.log("わんわん")}}>ここ押せわんわん</button>
                             <Typography>
                                 {`${displayAlias.aliasName} : ${displayAlias.spdx} : ${displayAlias.originalUse}`}
                             </Typography>
-                            </div>
                         </AccordionSummary>
                         <AccordionDetails>
                             {displayAlias.displayLibraries.map(elm => {

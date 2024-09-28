@@ -1,10 +1,10 @@
 import {DefaultHttp, Http} from "../http/Http.ts";
 import {apiGateway} from "../config/ReadEnv.ts";
-import {TeamRawList} from "../model/TeamLicenceList.ts";
+import {ResponceTeamRawList} from "../model/HttpInterface.ts";
 
 export interface TeamRepository {
     getTeamNames(): Promise<string[]>
-    getTeamLicenseRawLists(teamName: string): Promise<TeamRawList[]>
+    getTeamLicenseRawLists(teamName: string): Promise<ResponceTeamRawList[]>
 }
 
 export class DefaultTeamRepository implements TeamRepository {
@@ -15,7 +15,7 @@ export class DefaultTeamRepository implements TeamRepository {
         return await this.http.get(`${apiGateway}/api/teamLists`)
     }
 
-    async getTeamLicenseRawLists(teamName: string): Promise<TeamRawList[]> {
+    async getTeamLicenseRawLists(teamName: string): Promise<ResponceTeamRawList[]> {
         return await this.http.get(`${apiGateway}/api/teamLists/${teamName}`)
     }
 
