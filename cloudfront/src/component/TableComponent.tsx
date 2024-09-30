@@ -13,7 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import {CustomButton} from "./CustomButton.tsx";
 import Swal from "sweetalert2";
 import {RequestUpdateAliasName} from "../model/HttpInterface.ts";
-import {ApprovalListServise, DefaultApprovalListServise} from "../servise/ApprovalListServise.ts";
+import {ApprovalListService, DefaultApprovalListServise} from "../servise/ApprovalListService.ts";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -36,7 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 type Props = {
-    approvalListService?: ApprovalListServise
+    approvalListService?: ApprovalListService
 }
 
 export const TableComponent = (
@@ -61,10 +61,31 @@ export const TableComponent = (
                     licenseName
                 }
                 Swal.fire(`読み替えマスターに登録します ${aliasName}`);
-                const res = await approvalListService!.updateAliasName(request)
+                const res = await approvalListService!.registerAliasName(request)
                 console.log({res})
             }
         }
+    }
+
+    const onClickEditButton = async (licenseName: string, aliasNameArg: string) => {
+
+        const { value: aliasName } = await Swal.fire({
+            title: "修正",
+            input: "text",
+            inputLabel: `${licenseName}`,
+            text: aliasNameArg,
+            showCancelButton: true,
+        });
+        if (aliasName) {
+            const request: RequestUpdateAliasName = {
+                aliasName,
+                licenseName
+            }
+            Swal.fire(`読み替えマスターを更新します :  ${aliasName}`);
+            const res = await approvalListService!.updateAliasName(request)
+            console.log({res})
+        }
+
     }
 
     return (
@@ -89,7 +110,7 @@ export const TableComponent = (
                                 {approvalList.aliasName ?
                                     <div>
                                         <p>{approvalList.aliasName}</p>
-                                        <EditIcon />
+                                        <EditIcon onClick={() => {onClickEditButton(approvalList.licenseName, approvalList.aliasName!)}}/>
                                     </div>
                                     :
                                     <CustomButton

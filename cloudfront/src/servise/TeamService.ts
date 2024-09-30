@@ -2,13 +2,13 @@ import {DefaultTeamRepository} from "../repository/TeamRepository.ts";
 import {DisplaySortedByAliasName, SortByAliasName} from "../model/TeamLicenceList.ts";
 import {ResponceTeamRawList} from "../model/HttpInterface.ts";
 
-export interface TeamServise {
+export interface TeamService {
     getTeamNames(): Promise<string[]>
     getTeamLicenseList(teamName: string): Promise<DisplaySortedByAliasName[]>
     resisterTeamLicenseList(file: FormData, teamName: string): Promise<string>
 }
 
-export class DefaultTeamServise implements TeamServise {
+export class DefaultTeamServise implements TeamService {
     constructor(
         private teamRepository = new DefaultTeamRepository()
     ) {}

@@ -1,6 +1,11 @@
 import {DefaultHttp, Http} from "../http/Http.ts";
 import {apiGateway} from "../config/ReadEnv.ts";
-import {RequestUpdateAliasName, ResponseAliasList, ResponseApprovalList} from "../model/HttpInterface.ts";
+import {
+    RequestUpdateAliasName,
+    ResponseAliasList,
+    ResponseApprovalList,
+    ResponseUpdateAliasRecord
+} from "../model/HttpInterface.ts";
 import {BaseConfigCreator} from "./BaseConfigCreator.ts";
 import {ConfigType} from "../model/RepositoryInterface.ts";
 
@@ -9,6 +14,7 @@ export interface ApprovalListRepository {
     getApprovalList(): Promise<ResponseApprovalList[]>
     getAliasList(): Promise<ResponseAliasList[]>
     updateAliasName(reqBody: RequestUpdateAliasName): Promise<void>
+    updateAliasRecord(reqBody: RequestUpdateAliasName): Promise<ResponseUpdateAliasRecord>
 }
 
 export class DefaultApprovalListRepository extends BaseConfigCreator implements ApprovalListRepository {
@@ -30,5 +36,9 @@ export class DefaultApprovalListRepository extends BaseConfigCreator implements 
 
     async updateAliasName(reqBody: RequestUpdateAliasName): Promise<void> {
         await this.http.post(`${apiGateway}/api/aliases`, reqBody, this.getConfig(ConfigType.JSON))
+    }
+
+    async updateAliasRecord(reqBody: RequestUpdateAliasName): Promise<ResponseUpdateAliasRecord> {
+        return await this.http.put(`${apiGateway}/api/aliases`, reqBody, this.getConfig(ConfigType.JSON))
     }
 }

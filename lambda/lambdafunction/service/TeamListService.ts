@@ -2,7 +2,7 @@ import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
 import {CheckResult, CSVList, TeamListEntity} from "../model/interface.ts";
 import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
-import {TableName, TablePrimaryKey} from "../model/TableInterface";
+import {TableName, TablePartitioKey} from "../model/TableInterface";
 import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
 
 export interface TeamListService {
@@ -25,48 +25,44 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
         const encodedFile = (await multipart.parse(event)).files[0]
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
-
         for (const data of jsonDataLists) {
-            const isEmptyRow = data.length === 0
-            if (!isEmptyRow) {
-                let licenseName: string
-                let spdx = ""
-                let originalUse = ""
+            let licenseName: string
+            let spdx = ""
+            let originalUse = ""
 
-                const aliasName = data[CSVList.ARIASNAME]
-                const aliasRecord = await this.aliasListRepository.getItemByPrimaryKey({
-                    primaryKeyName: TablePrimaryKey.ALIASTTABLE,
-                    primaryKeyValue: aliasName
+            const aliasName = data[CSVList.ARIASNAME]
+            const aliasRecord = await this.aliasListRepository.getItemByPartitionKey({
+                partitionKeyName: TablePartitioKey.ALIASTTABLE,
+                partitionKeyValue: aliasName
+            })
+            licenseName = aliasRecord ? aliasRecord.licenseName : CheckResult.UNKNOWN
+            if (licenseName !== CheckResult.UNKNOWN) {
+                const approvalListRecord = await this.approvalListRepository.getItemByPartitionKey({
+                    partitionKeyName: TablePartitioKey.APPROVALLIST,
+                    partitionKeyValue: aliasRecord!.licenseName
                 })
-                licenseName = aliasRecord ? aliasRecord.licenseName : CheckResult.UNKNOWN
-                if (licenseName !== CheckResult.UNKNOWN) {
-                    const approvalListRecord = await this.approvalListRepository.getItemByPrimaryKey({
-                        primaryKeyName: TablePrimaryKey.APPROVALLIST,
-                        primaryKeyValue: aliasRecord!.licenseName
-                    })
-                    spdx = approvalListRecord!.spdx
-                    originalUse = approvalListRecord!.originalUse
-                }
-
-                const putList: TeamListEntity = {
-                    teamName: teamName,
-                    libraryName: data[CSVList.LIBRARYNAME],
-                    version: data[CSVList.VERSION],
-                    aliasName,
-                    licenseName,
-                    spdx,
-                    originalUse
-                }
-                await this.teamListRepository.putItem(putList)
+                spdx = approvalListRecord!.spdx
+                originalUse = approvalListRecord!.originalUse
             }
+
+            const putList: TeamListEntity = {
+                teamName: teamName,
+                libraryName: data[CSVList.LIBRARYNAME],
+                version: data[CSVList.VERSION],
+                aliasName,
+                licenseName,
+                spdx,
+                originalUse
+            }
+            await this.teamListRepository.putItem(putList)
         }
 
     }
 
     async getTeamListByName(teamName: string) {
-        return await this.teamListRepository.queryItemsByPrimaryKey({
-            primaryKeyName: TablePrimaryKey.TEAMLIST,
-            primaryKeyValue: teamName
+        return await this.teamListRepository.queryItemsByPartitionKey({
+            partitionKeyName: TablePartitioKey.TEAMLIST,
+            partitionKeyValue: teamName
         }) as TeamListEntity[]
     }
 

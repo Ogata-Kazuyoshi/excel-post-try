@@ -2,7 +2,7 @@ import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
 import {ColumnName, ExcelEntity} from "../model/interface.ts";
 import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
-import {TableName, TablePrimaryKey} from "../model/TableInterface";
+import {TableName, TablePartitioKey} from "../model/TableInterface";
 import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
 
 export interface ApprovalListService {
@@ -23,18 +23,15 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
         for (const data of jsonDataLists) {
-            const isEmptyRow = data.length === 0
-            if (!isEmptyRow) {
-                const putList: ExcelEntity = {
-                    licenseName: data[ColumnName.LICENCENAME],
-                    shortIdentifier: data[ColumnName.SHORTIDENTIFIER],
-                    fullName: data[ColumnName.FULLNAME],
-                    spdx: data[ColumnName.SPDX],
-                    originalUse: data[ColumnName.ORIGINALUSE],
-                    modified: data[ColumnName.MODIFIED],
-                }
-                await this.repository.putItem(putList)
+            const putList: ExcelEntity = {
+                licenseName: data[ColumnName.LICENCENAME],
+                shortIdentifier: data[ColumnName.SHORTIDENTIFIER],
+                fullName: data[ColumnName.FULLNAME],
+                spdx: data[ColumnName.SPDX],
+                originalUse: data[ColumnName.ORIGINALUSE],
+                modified: data[ColumnName.MODIFIED],
             }
+            await this.repository.putItem(putList)
         }
     }
 
@@ -46,9 +43,9 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
     private async deleteAllData() {
         const Items = await this.repository.scanParams() as ExcelEntity[]
         for (const item of Items) {
-            await this.repository.deleteItemByPrimaryKey({
-                primaryKeyName: TablePrimaryKey.APPROVALLIST,
-                primaryKeyValue: item.licenseName
+            await this.repository.deleteItemByPartitionKey({
+                partitionKeyName: TablePartitioKey.APPROVALLIST,
+                partitionKeyValue: item.licenseName
             })
         }
     }

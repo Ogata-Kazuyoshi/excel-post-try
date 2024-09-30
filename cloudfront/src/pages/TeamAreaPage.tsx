@@ -1,13 +1,13 @@
 import {VerticalNabs} from "../component/VerticalNabComponent.tsx";
 import {TeamLicenseListComponent} from "../component/TeamLicenseListComponent.tsx";
 import classes from "./TeamAreaComponent.module.scss"
-import {DefaultTeamServise, TeamServise} from "../servise/TeamServise.ts";
+import {DefaultTeamServise, TeamService} from "../servise/TeamService.ts";
 import {useEffect} from "react";
 import {useSetRecoilState} from "recoil";
 import {selectedTeamState, teamNameListState} from "../recoil/RecoilStates.ts";
 
 type Props = {
-    teamService?: TeamServise
+    teamService?: TeamService
 }
 export const TeamAreaPage = (
     {

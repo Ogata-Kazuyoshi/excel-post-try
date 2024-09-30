@@ -6,14 +6,15 @@ import {DefaultAliasService} from "../../service/AliasService";
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const body: AliasEntity = JSON.parse(event.body || '{}') ;
+        console.log({body})
         const aliasService = new DefaultAliasService()
-        await aliasService.resisterToDynamoDB(body)
+        const res = await aliasService.updateAliasRecord(body)
 
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify(
-                '登録しました'
+                res
             ),
         };
     } catch (err) {

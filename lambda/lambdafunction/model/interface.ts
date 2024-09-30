@@ -21,6 +21,13 @@ export interface AliasEntity {
     licenseName: string
 }
 
+export interface AliasEntityTemporary {
+    aliasName: string
+    licenseName: string
+    testColumn1: string
+    testColumn2: string
+}
+
 export enum CSVList {
     LIBRARYNAME= 0,
     VERSION= 1,

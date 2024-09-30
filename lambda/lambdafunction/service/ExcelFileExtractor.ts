@@ -15,7 +15,7 @@ export abstract class BaseExcelFileExtractor implements ExcelFileExtractor {
         const jsonDataLists = this.excelExtractor(tempFilePath);
         fs.unlinkSync(tempFilePath);
 
-        return jsonDataLists;
+        return jsonDataLists.filter(data => data.length !== 0);
     }
 
     private excelExtractor(tempFilePath: string): string[] {

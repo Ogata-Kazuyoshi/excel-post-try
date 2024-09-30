@@ -1,15 +1,15 @@
 import {UploadComponent} from "../component/UploadComponent.tsx";
 import Swal from "sweetalert2";
-import {ApprovalListServise, DefaultApprovalListServise} from "../servise/ApprovalListServise.ts";
+import {ApprovalListService, DefaultApprovalListServise} from "../servise/ApprovalListService.ts";
 import {useState} from "react";
 import {ExcelType} from "../model/ApprovalListInterface.ts";
 import classes from "./UpdateListsPage.module.scss"
-import {DefaultTeamServise, TeamServise} from "../servise/TeamServise.ts";
+import {DefaultTeamServise, TeamService} from "../servise/TeamService.ts";
 
 
 type Props = {
-    approvalListService?: ApprovalListServise
-    teamService?: TeamServise
+    approvalListService?: ApprovalListService
+    teamService?: TeamService
 }
 
 export const UpdateListsPage = (

@@ -1,11 +1,11 @@
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {selectedTeamState, sortedByAliasListsState} from "../recoil/RecoilStates.ts";
-import {DefaultTeamServise, TeamServise} from "../servise/TeamServise.ts";
+import {DefaultTeamServise, TeamService} from "../servise/TeamService.ts";
 import {AccordionComponent} from "./AccordionComponent.tsx";
 import classes from "./TeamLicenseListComponent.module.scss"
 
 type Props = {
-    teamService?: TeamServise
+    teamService?: TeamService
 }
 
 export const TeamLicenseListComponent = (

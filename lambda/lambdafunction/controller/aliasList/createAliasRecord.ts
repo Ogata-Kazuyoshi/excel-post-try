@@ -1,23 +1,27 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import {headers} from "../../config/dynamodbConfig";
+import {AliasEntity} from "../../model/interface";
 import {DefaultAliasService} from "../../service/AliasService";
 
-export const lambdaHandler = async (_event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
+        const body: AliasEntity = JSON.parse(event.body || '{}') ;
         const aliasService = new DefaultAliasService()
-        const aliases = await aliasService.readAllRecords()
+        await aliasService.createAliasRecord(body)
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(aliases),
+            body: JSON.stringify(
+                '登録しました'
+            ),
         };
     } catch (err) {
-        console.log(err);
         return {
             statusCode: 500,
+            headers,
             body: JSON.stringify({
-                message: 'some error happened',
+                error: err instanceof Error ? err.message : 'Unknown error',
             }),
         };
     }

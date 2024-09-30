@@ -1,15 +1,16 @@
 import {ApprovalListRepository, DefaultApprovalListRepository} from "../repository/ApprovalListRepository.ts";
-import {RequestUpdateAliasName, TableDisplay} from "../model/HttpInterface.ts";
+import {RequestUpdateAliasName, ResponseUpdateAliasRecord, TableDisplay} from "../model/HttpInterface.ts";
 import _ from "lodash";
 
-export interface ApprovalListServise {
+export interface ApprovalListService {
     resisterApprovalList(file: FormData): Promise<string>
-    getApprovalListTable(): Promise<TableDisplay[]>
-    updateAliasName(reqBody: RequestUpdateAliasName): Promise<void>
+    getApprovalList(): Promise<TableDisplay[]>
+    registerAliasName(reqBody: RequestUpdateAliasName): Promise<void>
+    updateAliasName(reqBody: RequestUpdateAliasName): Promise<ResponseUpdateAliasRecord>
 
 }
 
-export class DefaultApprovalListServise implements ApprovalListServise {
+export class DefaultApprovalListServise implements ApprovalListService {
     constructor(
         private approvalListRepository: ApprovalListRepository = new DefaultApprovalListRepository()
     ) {}
@@ -17,7 +18,7 @@ export class DefaultApprovalListServise implements ApprovalListServise {
         return await this.approvalListRepository.resisterApprovalList(file)
     }
 
-    async getApprovalListTable(): Promise<TableDisplay[]> {
+    async getApprovalList(): Promise<TableDisplay[]> {
         const approvalRawList = await this.approvalListRepository.getApprovalList()
         const clone = _.cloneDeep(approvalRawList)
         const sortedRes = clone.sort((a,b) => a.shortIdentifier.localeCompare(b.shortIdentifier))
@@ -30,8 +31,12 @@ export class DefaultApprovalListServise implements ApprovalListServise {
         return displayLists
     }
 
-    async updateAliasName(reqBody: RequestUpdateAliasName): Promise<void> {
+    async registerAliasName(reqBody: RequestUpdateAliasName): Promise<void> {
         await this.approvalListRepository.updateAliasName(reqBody)
+    }
+
+    async updateAliasName(reqBody: RequestUpdateAliasName): Promise<ResponseUpdateAliasRecord> {
+        return await this.approvalListRepository.updateAliasRecord(reqBody)
     }
 
 }

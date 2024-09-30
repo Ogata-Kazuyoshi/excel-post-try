@@ -4,7 +4,7 @@ export enum TableName {
     TEAMLIST = 'ogata-teamList'
 }
 
-export enum TablePrimaryKey {
+export enum TablePartitioKey {
     APPROVALLIST = 'licenseName',
     ALIASTTABLE = 'aliasName',
     TEAMLIST = 'teamName'

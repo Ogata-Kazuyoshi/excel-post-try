@@ -30,3 +30,10 @@ export interface RequestUpdateAliasName {
     aliasName: string
     licenseName: string
 }
+
+export interface ResponseUpdateAliasRecord {
+    aliasName: string
+    licenseName: string
+    testColumn1: string
+    testColumn2: string
+}
