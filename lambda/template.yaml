@@ -211,36 +211,7 @@ Resources:
         Target: 'es2020'
         Sourcemap: true
         EntryPoints:
-          - controller/aliasList/createAliasRecord.ts
-
-  GetAliases:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambdafunction/
-      Handler: getAliases.lambdaHandler
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      Role:
-        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
-      Events:
-        getAliases:
-          Type: Api
-          Properties:
-            Path: /api/aliases
-            Method: get
-            RestApiId: !Ref ApiGatewayApi
-      Timeout: 15
-      MemorySize: 256
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: 'es2020'
-        Sourcemap: true
-        EntryPoints:
-          - controller/aliasList/getAliases.ts
-
+          - controller/approvalList/createAliasRecord.ts
 
   LambdaUserAllGet:
     Type: AWS::Serverless::Function

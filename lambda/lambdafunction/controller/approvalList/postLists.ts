@@ -5,7 +5,7 @@ import {DefaultApprovalListService} from "../../service/ApprovalListService"
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const approvalListService = new DefaultApprovalListService()
-        await approvalListService.resisterToDynamoDB(event)
+        await approvalListService.createApprovalLists(event)
 
         return {
             statusCode: 200,

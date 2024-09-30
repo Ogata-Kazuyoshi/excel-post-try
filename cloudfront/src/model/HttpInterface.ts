@@ -16,11 +16,12 @@ export interface ResponseApprovalList {
     spdx: string
     originalUse: string
     modified: string
-}
-
-export interface TableDisplay extends ResponseApprovalList {
     aliasName?: string
 }
+
+// export interface TableDisplay extends ResponseApprovalList {
+//     aliasName?: string
+// }
 
 export interface ResponseAliasList {
     aliasName: string

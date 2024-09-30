@@ -1,13 +1,11 @@
 import {ApprovalListRepository, DefaultApprovalListRepository} from "../repository/ApprovalListRepository.ts";
-import {RequestUpdateAliasName, ResponseUpdateAliasRecord, TableDisplay} from "../model/HttpInterface.ts";
+import {RequestUpdateAliasName, ResponseApprovalList,} from "../model/HttpInterface.ts";
 import _ from "lodash";
 
 export interface ApprovalListService {
     resisterApprovalList(file: FormData): Promise<string>
-    getApprovalList(): Promise<TableDisplay[]>
+    getApprovalList(): Promise<ResponseApprovalList[]>
     registerAliasName(reqBody: RequestUpdateAliasName): Promise<void>
-    updateAliasName(reqBody: RequestUpdateAliasName): Promise<ResponseUpdateAliasRecord>
-
 }
 
 export class DefaultApprovalListServise implements ApprovalListService {
@@ -15,28 +13,16 @@ export class DefaultApprovalListServise implements ApprovalListService {
         private approvalListRepository: ApprovalListRepository = new DefaultApprovalListRepository()
     ) {}
     async resisterApprovalList(file: FormData): Promise<string> {
-        return await this.approvalListRepository.resisterApprovalList(file)
+        return await this.approvalListRepository.registerApprovalList(file)
     }
 
-    async getApprovalList(): Promise<TableDisplay[]> {
-        const approvalRawList = await this.approvalListRepository.getApprovalList()
-        const clone = _.cloneDeep(approvalRawList)
-        const sortedRes = clone.sort((a,b) => a.shortIdentifier.localeCompare(b.shortIdentifier))
-        const aliasLists = await this.approvalListRepository.getAliasList()
-        const displayLists: TableDisplay[] = sortedRes.map(elm => ({...elm, aliasName: undefined }))
-        aliasLists.forEach(aliasList => {
-            const targetIndex = displayLists.findIndex(displayList => displayList.licenseName === aliasList.licenseName)
-            displayLists[targetIndex].aliasName = aliasList.aliasName
-        })
-        return displayLists
+    async getApprovalList(): Promise<ResponseApprovalList[]> {
+        const res =  await this.approvalListRepository.getApprovalList()
+        const clone = _.cloneDeep(res)
+        return clone.sort((a,b) => a.shortIdentifier.localeCompare(b.shortIdentifier))
     }
 
     async registerAliasName(reqBody: RequestUpdateAliasName): Promise<void> {
-        await this.approvalListRepository.updateAliasName(reqBody)
+        await this.approvalListRepository.registerAliasName(reqBody)
     }
-
-    async updateAliasName(reqBody: RequestUpdateAliasName): Promise<ResponseUpdateAliasRecord> {
-        return await this.approvalListRepository.updateAliasRecord(reqBody)
-    }
-
 }

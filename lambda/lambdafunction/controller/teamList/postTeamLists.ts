@@ -14,7 +14,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
         }
 
         const teamListService = new DefaultTeamListService()
-        await teamListService.resisterToDynamoDB(event, teamName)
+        await teamListService.createTeamLists(event, teamName)
 
         return {
             statusCode: 200,

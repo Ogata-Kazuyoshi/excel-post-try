@@ -1,6 +1,7 @@
-import { atom } from 'recoil'
+import {atom} from 'recoil'
 import {DisplaySortedByAliasName} from "../model/TeamLicenceList.ts";
-import {TableDisplay} from "../model/HttpInterface.ts";
+import {ResponseApprovalList} from "../model/HttpInterface.ts";
+
 export const teamNameListState = atom<string[]>({
     key: 'teamNameListState',
     default: [],
@@ -16,7 +17,7 @@ export const sortedByAliasListsState = atom<DisplaySortedByAliasName[]>({
     default: [],
 })
 
-export const approvalListsState = atom<TableDisplay[]>({
+export const approvalListsState = atom<ResponseApprovalList[]>({
     key: 'approvalListsState',
     default: []
 })

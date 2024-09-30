@@ -1,14 +1,20 @@
 import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
-import {ColumnName, ExcelEntity} from "../model/interface.ts";
-import {DefaultDynamoDBRepository, DynamoDBRepository, GSIQueryRequest} from "../repository/DynamoDBRepository";
+import {AliasEntity, ColumnName, ExcelEntity} from "../model/interface.ts";
+import {
+    DefaultDynamoDBRepository,
+    DynamoDBRepository,
+    GSIQueryRequest,
+    UpdateMultiColumnByPartitionKey
+} from "../repository/DynamoDBRepository";
 import {ApprovalListGSI, TableName, TablePartitioKey} from "../model/TableInterface";
 import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
 import {v4 as uuidv4} from 'uuid'
 
 export interface ApprovalListService {
-    resisterToDynamoDB(event: APIGatewayProxyEvent)
-    readAllData(): Promise<ExcelEntity[]>
+    createApprovalLists(event: APIGatewayProxyEvent)
+    getAllApprovalLists(): Promise<ExcelEntity[]>
+    createAliasRecord(putList: AliasEntity)
 }
 
 export class DefaultApprovalListService extends BaseExcelFileExtractor implements ApprovalListService{
@@ -19,7 +25,7 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
         super()
     }
 
-    async resisterToDynamoDB(event: APIGatewayProxyEvent) {
+    async createApprovalLists(event: APIGatewayProxyEvent) {
         const encodedFile = (await multipart.parse(event)).files[0]
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
@@ -36,8 +42,33 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
             await this.repository.putItem(putList)
         }
     }
+    async createAliasRecord(putList: AliasEntity) {
+        const {aliasName, licenseName} = putList
+        const GSIReq: GSIQueryRequest = {
+            indexName: ApprovalListGSI.LicenseIndexName,
+            partitionKeyName: ApprovalListGSI.LicenseNamePK,
+            partitionKeyValue: licenseName
+        }
+        const currentRecord = await this.repository.queryItemsByGSI(GSIReq) as ExcelEntity[]
+        const updateRequest: UpdateMultiColumnByPartitionKey = {
+            partitionKeyName: TablePartitioKey.APPROVALLIST,
+            partitionKeyValue: currentRecord[0].id,
+            updateColumns: [
+                {
+                    updateColumnKey: 'aliasName',
+                    updateColumnValue: aliasName
+                },
+                // {
+                //     updateColumnKey: 'update',
+                //     updateColumnValue: currentTime.toISOString()
+                // }
+            ]
+        }
+        await this.repository.updateMultiColumnByPartitionKey(updateRequest)
+    }
 
-    async readAllData(): Promise<ExcelEntity[]> {
+
+    async getAllApprovalLists(): Promise<ExcelEntity[]> {
         return await this.repository.scanParams() as ExcelEntity[]
     }
 

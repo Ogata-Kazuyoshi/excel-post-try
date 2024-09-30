@@ -5,7 +5,7 @@ import {DefaultApprovalListService} from "../../service/ApprovalListService";
 export const lambdaHandler = async (_event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const approvalListService = new DefaultApprovalListService()
-        const excelList = await approvalListService.readAllData()
+        const excelList = await approvalListService.getAllApprovalLists()
 
         return {
             statusCode: 200,
