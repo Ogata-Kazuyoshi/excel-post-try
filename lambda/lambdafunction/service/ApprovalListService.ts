@@ -1,9 +1,10 @@
 import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
 import {ColumnName, ExcelEntity} from "../model/interface.ts";
-import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
-import {TableName, TablePartitioKey} from "../model/TableInterface";
+import {DefaultDynamoDBRepository, DynamoDBRepository, GSIQueryRequest} from "../repository/DynamoDBRepository";
+import {ApprovalListGSI, TableName, TablePartitioKey} from "../model/TableInterface";
 import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
+import {v4 as uuidv4} from 'uuid'
 
 export interface ApprovalListService {
     resisterToDynamoDB(event: APIGatewayProxyEvent)
@@ -24,6 +25,7 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
 
         for (const data of jsonDataLists) {
             const putList: ExcelEntity = {
+                id: uuidv4(),
                 licenseName: data[ColumnName.LICENCENAME],
                 shortIdentifier: data[ColumnName.SHORTIDENTIFIER],
                 fullName: data[ColumnName.FULLNAME],

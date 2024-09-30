@@ -82,7 +82,8 @@ export const TableComponent = (
                 licenseName
             }
             Swal.fire(`読み替えマスターを更新します :  ${aliasName}`);
-            const res = await approvalListService!.updateAliasName(request)
+            const res = await approvalListService!.registerAliasName(request)
+            // const res = await approvalListService!.updateAliasName(request)
             console.log({res})
         }
 
@@ -103,7 +104,7 @@ export const TableComponent = (
                 </TableHead>
                 <TableBody>
                     {approvalLists.map((approvalList) => (
-                        <StyledTableRow key={approvalList.licenseName}>
+                        <StyledTableRow key={approvalList.id}>
                             <StyledTableCell align="right">{approvalList.licenseName}</StyledTableCell>
                             <StyledTableCell align="right">{approvalList.shortIdentifier}</StyledTableCell>
                             <StyledTableCell align="right">

@@ -1,9 +1,10 @@
 import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
-import {CheckResult, CSVList, TeamListEntity} from "../model/interface.ts";
-import {DefaultDynamoDBRepository, DynamoDBRepository} from "../repository/DynamoDBRepository";
-import {TableName, TablePartitioKey} from "../model/TableInterface";
+import {CheckResult, CSVList, ExcelEntity, TeamListEntity} from "../model/interface.ts";
+import {DefaultDynamoDBRepository, DynamoDBRepository, GSIQueryRequest} from "../repository/DynamoDBRepository";
+import {ApprovalListGSI, TableName, TablePartitioKey, TeamListGSI} from "../model/TableInterface";
 import {BaseExcelFileExtractor} from "./ExcelFileExtractor";
+import {v4 as uuidv4} from 'uuid'
 
 export interface TeamListService {
     resisterToDynamoDB(event: APIGatewayProxyEvent, teamName: string)
@@ -15,7 +16,7 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
 
     constructor(
         private teamListRepository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.TEAMLIST),
-        private aliasListRepository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE),
+        // private aliasListRepository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE),
         private approvalListRepository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.APPROVALLIST)
     ){
         super()
@@ -31,21 +32,23 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
             let originalUse = ""
 
             const aliasName = data[CSVList.ARIASNAME]
-            const aliasRecord = await this.aliasListRepository.getItemByPartitionKey({
-                partitionKeyName: TablePartitioKey.ALIASTTABLE,
+            const GSIReq: GSIQueryRequest = {
+                indexName: ApprovalListGSI.AliasIndexName,
+                partitionKeyName: ApprovalListGSI.AliasNamePK,
                 partitionKeyValue: aliasName
-            })
-            licenseName = aliasRecord ? aliasRecord.licenseName : CheckResult.UNKNOWN
+            }
+
+            const currentApprovalListRecord = (await this.approvalListRepository.queryItemsByGSI(GSIReq) as ExcelEntity[])[0]
+            console.log({aliasName})
+            console.log({currentApprovalListRecord})
+            licenseName = currentApprovalListRecord ? currentApprovalListRecord.licenseName : CheckResult.UNKNOWN
             if (licenseName !== CheckResult.UNKNOWN) {
-                const approvalListRecord = await this.approvalListRepository.getItemByPartitionKey({
-                    partitionKeyName: TablePartitioKey.APPROVALLIST,
-                    partitionKeyValue: aliasRecord!.licenseName
-                })
-                spdx = approvalListRecord!.spdx
-                originalUse = approvalListRecord!.originalUse
+                spdx = currentApprovalListRecord.spdx
+                originalUse = currentApprovalListRecord.originalUse
             }
 
             const putList: TeamListEntity = {
+                id: uuidv4(),
                 teamName: teamName,
                 libraryName: data[CSVList.LIBRARYNAME],
                 version: data[CSVList.VERSION],
@@ -60,10 +63,13 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
     }
 
     async getTeamListByName(teamName: string) {
-        return await this.teamListRepository.queryItemsByPartitionKey({
-            partitionKeyName: TablePartitioKey.TEAMLIST,
+        const GSIReq: GSIQueryRequest = {
+            indexName: TeamListGSI.teamIndexName,
+            partitionKeyName: TeamListGSI.teamNamePK,
             partitionKeyValue: teamName
-        }) as TeamListEntity[]
+        }
+
+        return await this.teamListRepository.queryItemsByGSI(GSIReq) as TeamListEntity[]
     }
 
     async getTeamNames(): Promise<string[]> {

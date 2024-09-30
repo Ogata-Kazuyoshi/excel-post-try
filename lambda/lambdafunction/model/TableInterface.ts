@@ -1,15 +1,29 @@
 export enum TableName {
     APPROVALLIST = 'approval-list',
-    ALIASTTABLE = 'ogata-aliases',
-    TEAMLIST = 'ogata-teamList'
+    ALIASTTABLE = 'alias-list',
+    TEAMLIST = 'team-list'
 }
 
 export enum TablePartitioKey {
-    APPROVALLIST = 'licenseName',
+    APPROVALLIST = 'id',
     ALIASTTABLE = 'aliasName',
-    TEAMLIST = 'teamName'
+    TEAMLIST = 'id'
 }
 
 export enum TableSortKey {
     TEAMLIST = 'libraryName'
+}
+
+export enum ApprovalListGSI {
+    LicenseIndexName = 'licenseName',
+    LicenseNamePK = 'licenseName',
+    AliasIndexName = 'aliasName',
+    AliasNamePK = 'aliasName'
+}
+
+export enum TeamListGSI {
+    teamIndexName = 'teamName',
+    teamNamePK = 'teamName',
+    teamNameSK = 'libraryName',
+
 }

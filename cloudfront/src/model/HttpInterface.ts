@@ -9,6 +9,7 @@ export interface ResponceTeamRawList {
 }
 
 export interface ResponseApprovalList {
+    id: string
     licenseName: string
     shortIdentifier: string
     fullName: string

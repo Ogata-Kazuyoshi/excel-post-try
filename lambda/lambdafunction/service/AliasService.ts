@@ -1,51 +1,51 @@
-import {AliasEntity, AliasEntityTemporary} from "../model/interface";
+import {AliasEntity, AliasEntityTemporary, ExcelEntity} from "../model/interface";
 import {
     DefaultDynamoDBRepository,
-    DynamoDBRepository,
+    DynamoDBRepository, GSIQueryRequest,
     UpdateMultiColumnByPartitionKey
 } from "../repository/DynamoDBRepository";
-import {TableName, TablePartitioKey} from "../model/TableInterface";
+import {ApprovalListGSI, TableName, TablePartitioKey} from "../model/TableInterface";
 
 export interface AliasService {
     createAliasRecord(putList: AliasEntity)
-    updateAliasRecord(putList: AliasEntity): Promise<AliasEntityTemporary>
     readAllRecords(): Promise<AliasEntity[]>
 }
 
 export class DefaultAliasService implements AliasService{
 
     constructor(
-        private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE)
+        // private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.ALIASTTABLE)
+        private repository: DynamoDBRepository = new DefaultDynamoDBRepository(TableName.APPROVALLIST)
     ) {}
     async createAliasRecord(putList: AliasEntity) {
-        const tempRequest: AliasEntityTemporary = {
-            ...putList,
-            testColumn1: `${putList.aliasName} + ${putList.licenseName}`,
-            testColumn2: 'hogehoge'
+        console.log({putList})
+        const {aliasName, licenseName} = putList
+        const GSIReq: GSIQueryRequest = {
+            indexName: ApprovalListGSI.LicenseIndexName,
+            partitionKeyName: ApprovalListGSI.LicenseNamePK,
+            partitionKeyValue: licenseName
         }
-        await this.repository.putItem(tempRequest)
+        const currentRecord = await this.repository.queryItemsByGSI(GSIReq) as ExcelEntity[]
+        const updateRequest: UpdateMultiColumnByPartitionKey = {
+            partitionKeyName: TablePartitioKey.APPROVALLIST,
+            partitionKeyValue: currentRecord[0].id,
+            updateColumns: [
+                {
+                    updateColumnKey: 'aliasName',
+                    updateColumnValue: aliasName
+                },
+                // {
+                //     updateColumnKey: 'update',
+                //     updateColumnValue: currentTime.toISOString()
+                // }
+            ]
+        }
+        await this.repository.updateMultiColumnByPartitionKey(updateRequest)
+
     }
 
     async readAllRecords(): Promise<AliasEntity[]> {
         return await this.repository.scanParams() as AliasEntity[]
-    }
-
-    async updateAliasRecord(putList: AliasEntity): Promise<AliasEntityTemporary> {
-        const requestUpdate: UpdateMultiColumnByPartitionKey = {
-            partitionKeyName: TablePartitioKey.ALIASTTABLE,
-            partitionKeyValue: putList.aliasName,
-            updateColumns: [
-                {
-                    updateColumnKey: 'testColumn1',
-                    updateColumnValue: 'アップデートコマンドがうまく働いてます'
-                },
-                {
-                    updateColumnKey: 'testColumn2',
-                    updateColumnValue: 'fugafuga'
-                }
-            ]
-        }
-        return await this.repository.updateMultiColumnByPartitionKey(requestUpdate) as AliasEntityTemporary
     }
 
 }

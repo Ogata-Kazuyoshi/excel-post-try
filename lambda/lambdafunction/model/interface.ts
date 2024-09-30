@@ -8,12 +8,14 @@ export enum ColumnName  {
 }
 
 export interface ExcelEntity {
+    id: string
     licenseName: string
     shortIdentifier: string
     fullName: string
     spdx: string
     originalUse: string
     modified: string
+    aliasName?: string
 }
 
 export interface AliasEntity {
@@ -35,6 +37,7 @@ export enum CSVList {
 }
 
 export interface TeamListEntity {
+    id: string
     teamName: string
     libraryName: string
     version: string

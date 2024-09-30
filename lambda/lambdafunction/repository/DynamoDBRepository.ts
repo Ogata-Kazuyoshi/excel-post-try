@@ -11,6 +11,7 @@ export interface DynamoDBRepository {
     updateMultiColumnByPartitionKey(updateMultiRequestByPartitionKey: UpdateMultiColumnByPartitionKey): Promise<UpdateItemCommandOutput>
     getItemByPartitionKey<T>(getItemByPartitionKey: DesignatedForPartitionKey): Promise<T | undefined>
     queryItemsByPartitionKey<T>(queryItemsByPartitionKey: DesignatedForPartitionKey): Promise<T[]>
+    queryItemsByGSI<T>(queryRequest: GSIQueryRequest): Promise<T[]>
 }
 
 export class DefaultDynamoDBRepository implements DynamoDBRepository{
@@ -106,6 +107,23 @@ export class DefaultDynamoDBRepository implements DynamoDBRepository{
             ReturnValues: 'UPDATED_NEW'
         }))
     }
+
+    async queryItemsByGSI<T>(queryRequest: GSIQueryRequest): Promise<T[]> {
+        const {indexName, partitionKeyName, partitionKeyValue} = queryRequest
+        const KeyConditionExpression = `#${partitionKeyName} = :${partitionKeyName}`
+        const ExpressionAttributeNames = {}
+        const ExpressionAttributeValues= {}
+        ExpressionAttributeNames[`#${partitionKeyName}`] = partitionKeyName
+        ExpressionAttributeValues[`:${partitionKeyName}`] = partitionKeyValue
+        const result = await dynamo.send(new QueryCommand({
+            TableName: this.tableName,
+            IndexName: indexName,
+            KeyConditionExpression,
+            ExpressionAttributeNames,
+            ExpressionAttributeValues
+        }))
+        return result.Items as T[]
+    }
 }
 
 export interface DesignatedForPartitionKey {
@@ -128,4 +146,10 @@ export interface UpdateMultiColumnByPartitionKey {
 export interface ColumnDetail {
     updateColumnKey: string
     updateColumnValue: string
+}
+
+export interface GSIQueryRequest {
+    indexName: string
+    partitionKeyName: string
+    partitionKeyValue: string
 }
