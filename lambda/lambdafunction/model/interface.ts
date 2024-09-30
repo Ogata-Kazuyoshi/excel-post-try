@@ -15,6 +15,8 @@ export interface ExcelEntity {
     spdx: string
     originalUse: string
     modified: string
+    startedAt: string
+    updatedAt: string
     aliasName?: string
 }
 

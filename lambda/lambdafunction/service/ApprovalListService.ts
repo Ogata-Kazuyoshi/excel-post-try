@@ -30,16 +30,32 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
         for (const data of jsonDataLists) {
-            const putList: ExcelEntity = {
-                id: uuidv4(),
-                licenseName: data[ColumnName.LICENCENAME],
-                shortIdentifier: data[ColumnName.SHORTIDENTIFIER],
-                fullName: data[ColumnName.FULLNAME],
-                spdx: data[ColumnName.SPDX],
-                originalUse: data[ColumnName.ORIGINALUSE],
-                modified: data[ColumnName.MODIFIED],
+            const currentRecord = await this.readCurrentLicense(data);
+
+            if (currentRecord) {
+                const updateRequest: UpdateMultiColumnByPartitionKey = {
+                    partitionKeyName: TablePartitioKey.APPROVALLIST,
+                    partitionKeyValue: currentRecord.id,
+                    updateColumns: [
+                        {updateColumnKey: 'originalUse', updateColumnValue: data[ColumnName.ORIGINALUSE] },
+                        {updateColumnKey: 'modified', updateColumnValue: data[ColumnName.MODIFIED] }
+                    ]
+                }
+                await this.repository.updateMultiColumnByPartitionKey(updateRequest)
+            } else {
+                const putList: ExcelEntity = {
+                    id: uuidv4(),
+                    licenseName: data[ColumnName.LICENCENAME],
+                    shortIdentifier: data[ColumnName.SHORTIDENTIFIER],
+                    fullName: data[ColumnName.FULLNAME],
+                    spdx: data[ColumnName.SPDX],
+                    originalUse: data[ColumnName.ORIGINALUSE],
+                    modified: data[ColumnName.MODIFIED],
+                    startedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+                await this.repository.putItem(putList)
             }
-            await this.repository.putItem(putList)
         }
     }
     async createAliasRecord(putList: AliasEntity) {
@@ -58,10 +74,10 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
                     updateColumnKey: 'aliasName',
                     updateColumnValue: aliasName
                 },
-                // {
-                //     updateColumnKey: 'update',
-                //     updateColumnValue: currentTime.toISOString()
-                // }
+                {
+                    updateColumnKey: 'updatedAt',
+                    updateColumnValue: new Date().toISOString()
+                }
             ]
         }
         await this.repository.updateMultiColumnByPartitionKey(updateRequest)
@@ -70,6 +86,15 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
 
     async getAllApprovalLists(): Promise<ExcelEntity[]> {
         return await this.repository.scanParams() as ExcelEntity[]
+    }
+
+    private async readCurrentLicense(data: string) {
+        const GSIReq: GSIQueryRequest = {
+            indexName: ApprovalListGSI.LicenseIndexName,
+            partitionKeyName: ApprovalListGSI.LicenseNamePK,
+            partitionKeyValue: data[ColumnName.LICENCENAME]
+        }
+        return (await this.repository.queryItemsByGSI(GSIReq) as ExcelEntity[])[0]
     }
 
     //TODO 一旦使ってないけど、消したい時のイメージとして残しておく
