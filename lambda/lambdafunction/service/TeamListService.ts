@@ -25,6 +25,7 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
         const encodedFile = (await multipart.parse(event)).files[0]
         const jsonDataLists = this.jsonListsParser(encodedFile)
 
+
         for (const data of jsonDataLists) {
             const isEmptyRow = data.length === 0
             if (!isEmptyRow) {
@@ -37,11 +38,11 @@ export class DefaultTeamListService extends BaseExcelFileExtractor implements Te
                     primaryKeyName: TablePrimaryKey.ALIASTTABLE,
                     primaryKeyValue: aliasName
                 })
-                licenseName = aliasRecord ? aliasRecord.originalName : CheckResult.UNKNOWN
+                licenseName = aliasRecord ? aliasRecord.licenseName : CheckResult.UNKNOWN
                 if (licenseName !== CheckResult.UNKNOWN) {
                     const approvalListRecord = await this.approvalListRepository.getItemByPrimaryKey({
                         primaryKeyName: TablePrimaryKey.APPROVALLIST,
-                        primaryKeyValue: aliasRecord!.originalName
+                        primaryKeyValue: aliasRecord!.licenseName
                     })
                     spdx = approvalListRecord!.spdx
                     originalUse = approvalListRecord!.originalUse

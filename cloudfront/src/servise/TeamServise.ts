@@ -5,6 +5,7 @@ import {ResponceTeamRawList} from "../model/HttpInterface.ts";
 export interface TeamServise {
     getTeamNames(): Promise<string[]>
     getTeamLicenseList(teamName: string): Promise<DisplaySortedByAliasName[]>
+    resisterTeamLicenseList(file: FormData, teamName: string): Promise<string>
 }
 
 export class DefaultTeamServise implements TeamServise {
@@ -27,6 +28,10 @@ export class DefaultTeamServise implements TeamServise {
                 displayLibraries: sortByAliasName[currentAliasName].libraries,
             })
         )
+    }
+
+    async resisterTeamLicenseList(file: FormData, teamName: string): Promise<string> {
+        return await this.teamRepository.resisterTeamLicenseList(file, teamName)
     }
 
     private createAliasLists(teamLicenseRawLists: ResponceTeamRawList[]) {

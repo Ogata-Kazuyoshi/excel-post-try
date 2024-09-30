@@ -4,15 +4,18 @@ import {ApprovalListServise, DefaultApprovalListServise} from "../servise/Approv
 import {useState} from "react";
 import {ExcelType} from "../model/ApprovalListInterface.ts";
 import classes from "./UpdateListsPage.module.scss"
+import {DefaultTeamServise, TeamServise} from "../servise/TeamServise.ts";
 
 
 type Props = {
     approvalListService?: ApprovalListServise
+    teamService?: TeamServise
 }
 
 export const UpdateListsPage = (
     {
-        approvalListService = new DefaultApprovalListServise()
+        approvalListService = new DefaultApprovalListServise(),
+        teamService = new DefaultTeamServise()
     }:Props
 ) => {
     const [teamName, setTeamName] = useState('')
@@ -41,7 +44,7 @@ export const UpdateListsPage = (
                 const isApprovalList = type === ExcelType.APPROVALLIST
                 const res =
                     isApprovalList ? await approvalListService?.resisterApprovalList(formData):
-                        await approvalListService?.resisterAliasRecord(formData, teamName!)
+                        await teamService?.resisterTeamLicenseList(formData, teamName!)
                 console.log({ res });
             } catch (error) {
                 console.error(error);

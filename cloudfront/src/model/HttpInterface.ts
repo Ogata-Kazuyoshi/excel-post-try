@@ -23,5 +23,10 @@ export interface TableDisplay extends ResponseApprovalList {
 
 export interface ResponseAliasList {
     aliasName: string
-    originalName: string
+    licenseName: string
+}
+
+export interface RequestUpdateAliasName {
+    aliasName: string
+    licenseName: string
 }

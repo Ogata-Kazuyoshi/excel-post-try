@@ -1,31 +1,23 @@
 import {DefaultHttp, Http} from "../http/Http.ts";
-import {AxiosRequestConfig} from "axios";
 import {apiGateway} from "../config/ReadEnv.ts";
-import {ResponseAliasList, ResponseApprovalList} from "../model/HttpInterface.ts";
+import {RequestUpdateAliasName, ResponseAliasList, ResponseApprovalList} from "../model/HttpInterface.ts";
+import {BaseConfigCreator} from "./BaseConfigCreator.ts";
+import {ConfigType} from "../model/RepositoryInterface.ts";
 
 export interface ApprovalListRepository {
     resisterApprovalList(file: FormData): Promise<string>
-    resisterAliasRecord(file: FormData, teamName: string): Promise<string>
     getApprovalList(): Promise<ResponseApprovalList[]>
     getAliasList(): Promise<ResponseAliasList[]>
+    updateAliasName(reqBody: RequestUpdateAliasName): Promise<void>
 }
 
-export class DefaultApprovalListRepository implements ApprovalListRepository {
-
-    config: AxiosRequestConfig = {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-    };
+export class DefaultApprovalListRepository extends BaseConfigCreator implements ApprovalListRepository {
     constructor(private http: Http = new DefaultHttp()) {
+        super()
     }
 
     async resisterApprovalList(file: FormData): Promise<string> {
-        return await this.http.post(`${apiGateway}/api/lists`, file, this.config)
-    }
-
-    async resisterAliasRecord(file: FormData, teamName: string): Promise<string> {
-        return await this.http.post(`${apiGateway}/api/teamLists/${teamName}`, file, this.config)
+        return await this.http.post(`${apiGateway}/api/lists`, file, this.getConfig(ConfigType.FORMDATA))
     }
 
     async getApprovalList(): Promise<ResponseApprovalList[]> {
@@ -36,6 +28,7 @@ export class DefaultApprovalListRepository implements ApprovalListRepository {
         return await this.http.get(`${apiGateway}/api/aliases`)
     }
 
-
-
+    async updateAliasName(reqBody: RequestUpdateAliasName): Promise<void> {
+        await this.http.post(`${apiGateway}/api/aliases`, reqBody, this.getConfig(ConfigType.JSON))
+    }
 }

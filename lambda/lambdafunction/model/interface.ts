@@ -18,7 +18,7 @@ export interface ExcelEntity {
 
 export interface AliasEntity {
     aliasName: string
-    originalName: string
+    licenseName: string
 }
 
 export enum CSVList {

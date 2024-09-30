@@ -1,11 +1,12 @@
 import {ApprovalListRepository, DefaultApprovalListRepository} from "../repository/ApprovalListRepository.ts";
-import {TableDisplay} from "../model/HttpInterface.ts";
+import {RequestUpdateAliasName, TableDisplay} from "../model/HttpInterface.ts";
 import _ from "lodash";
 
 export interface ApprovalListServise {
     resisterApprovalList(file: FormData): Promise<string>
-    resisterAliasRecord(file: FormData, teamName: string): Promise<string>
     getApprovalListTable(): Promise<TableDisplay[]>
+    updateAliasName(reqBody: RequestUpdateAliasName): Promise<void>
+
 }
 
 export class DefaultApprovalListServise implements ApprovalListServise {
@@ -16,10 +17,6 @@ export class DefaultApprovalListServise implements ApprovalListServise {
         return await this.approvalListRepository.resisterApprovalList(file)
     }
 
-    async resisterAliasRecord(file: FormData, teamName: string): Promise<string> {
-        return await this.approvalListRepository.resisterAliasRecord(file, teamName)
-    }
-
     async getApprovalListTable(): Promise<TableDisplay[]> {
         const approvalRawList = await this.approvalListRepository.getApprovalList()
         const clone = _.cloneDeep(approvalRawList)
@@ -27,10 +24,14 @@ export class DefaultApprovalListServise implements ApprovalListServise {
         const aliasLists = await this.approvalListRepository.getAliasList()
         const displayLists: TableDisplay[] = sortedRes.map(elm => ({...elm, aliasName: undefined }))
         aliasLists.forEach(aliasList => {
-            const targetIndex = displayLists.findIndex(displayList => displayList.licenseName === aliasList.originalName)
+            const targetIndex = displayLists.findIndex(displayList => displayList.licenseName === aliasList.licenseName)
             displayLists[targetIndex].aliasName = aliasList.aliasName
         })
         return displayLists
+    }
+
+    async updateAliasName(reqBody: RequestUpdateAliasName): Promise<void> {
+        await this.approvalListRepository.updateAliasName(reqBody)
     }
 
 }
