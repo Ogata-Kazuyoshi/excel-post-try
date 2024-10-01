@@ -7,6 +7,12 @@ export enum ColumnName  {
     MODIFIED=9
 }
 
+export enum CSVList {
+    LIBRARYNAME= 0,
+    VERSION= 1,
+    ARIASNAME= 2
+}
+
 export interface ExcelEntity {
     id: string
     licenseName: string
@@ -20,30 +26,17 @@ export interface ExcelEntity {
     aliasName?: string
 }
 
-export interface AliasEntity {
-    aliasName: string
-    licenseName: string
-}
-
-export interface AliasEntityTemporary {
-    aliasName: string
-    licenseName: string
-    testColumn1: string
-    testColumn2: string
-}
-
-export enum CSVList {
-    LIBRARYNAME= 0,
-    VERSION= 1,
-    ARIASNAME= 2
-}
-
 export interface TeamListEntity {
     id: string
     teamName: string
     libraryName: string
     version: string
     aliasName: string
+}
+
+export interface RequestAliasChange {
+    aliasName: string
+    licenseName: string
 }
 
 export interface ResponseTeamList extends TeamListEntity{

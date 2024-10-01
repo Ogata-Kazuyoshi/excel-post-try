@@ -162,11 +162,11 @@ make cloudfront-deploy
 - CloudFrontに貼り付けるSSL証明書は「us-east-1」じゃないとCloudFrontに貼れないの作成する場所注意！！
 - なぜか、AWSでERRORなる時は「①DynamoDBへの権限不足②RCU/WCU不足」を疑って
 
-```zh
-make excel-post
-```
-
-
+# APIGatewayのカスタムドメイン化について
+- SSL証明書を「us-east-1」で作成（APIgatewayのエイリアスがcloudFrontになるため）
+- APIGatewayの設定画面で「カスタムドメイン」を作成。これはAPIGatewayをデプロイしてる東京リージョンなどでOK（リージョン最適化にしたらus-eastのSSL選べる）
+- APIのマッピングを設定して、カスタムドメインとAPIGatewayの紐付けをする
+- Route53に行って、「Aレコード」のエイリアスでAPIGatewayのカスタムドメイン（実質はcloudFront）に設定する
 
 # 参考
 

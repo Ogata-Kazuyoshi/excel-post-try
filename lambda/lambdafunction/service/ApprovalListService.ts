@@ -1,6 +1,6 @@
 import {APIGatewayProxyEvent} from "aws-lambda";
 import multipart from "lambda-multipart-parser";
-import {AliasEntity, ColumnName, ExcelEntity} from "../model/interface.ts";
+import {RequestAliasChange, ColumnName, ExcelEntity} from "../model/interface.ts";
 import {
     DefaultDynamoDBRepository,
     DynamoDBRepository,
@@ -14,7 +14,7 @@ import {v4 as uuidv4} from 'uuid'
 export interface ApprovalListService {
     createApprovalLists(event: APIGatewayProxyEvent)
     getAllApprovalLists(): Promise<ExcelEntity[]>
-    createAliasRecord(putList: AliasEntity)
+    createAliasRecord(putList: RequestAliasChange)
 }
 
 export class DefaultApprovalListService extends BaseExcelFileExtractor implements ApprovalListService{
@@ -57,7 +57,7 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
             }
         }
     }
-    async createAliasRecord(putList: AliasEntity) {
+    async createAliasRecord(putList: RequestAliasChange) {
         const {aliasName, licenseName} = putList
         const GSIReq: GSIQueryRequest = {
             indexName: ApprovalListGSI.LicenseIndexName,

@@ -1,11 +1,11 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import {headers} from "../../config/dynamodbConfig";
-import {AliasEntity} from "../../model/interface";
+import {RequestAliasChange} from "../../model/interface";
 import {DefaultApprovalListService} from "../../service/ApprovalListService";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const body: AliasEntity = JSON.parse(event.body || '{}') ;
+        const body: RequestAliasChange = JSON.parse(event.body || '{}') ;
         const approvalListService = new DefaultApprovalListService()
         await approvalListService.createAliasRecord(body)
 
