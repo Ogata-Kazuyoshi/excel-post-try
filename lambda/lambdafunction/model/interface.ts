@@ -44,6 +44,9 @@ export interface TeamListEntity {
     libraryName: string
     version: string
     aliasName: string
+}
+
+export interface ResponseTeamList extends TeamListEntity{
     licenseName: string
     spdx: string
     originalUse: string
