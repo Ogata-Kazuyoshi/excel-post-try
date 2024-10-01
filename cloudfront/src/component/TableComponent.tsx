@@ -10,7 +10,7 @@ import {useRecoilValue} from "recoil";
 import {approvalListsState} from "../recoil/RecoilStates.ts";
 import EditIcon from '@mui/icons-material/Edit';
 import {CustomButton} from "./CustomButton.tsx";
-import Swal from "sweetalert2";
+import Swal, {SweetAlertOptions} from "sweetalert2";
 import {RequestUpdateAliasName} from "../model/HttpInterface.ts";
 import {ApprovalListService, DefaultApprovalListServise} from "../servise/ApprovalListService.ts";
 
@@ -46,46 +46,33 @@ export const TableComponent = (
 
     const approvalLists = useRecoilValue(approvalListsState)
 
-    const onClickCustomButtonClosure =  (licenseName: string) => {
+    const onClickHandlerForAlias =  (licenseName: string, aliasNameArg?: string) => {
+        const sawlOptionHandler: SweetAlertOptions = {
+            title: aliasNameArg ? "修正" : "登録",
+            input: "text",
+            inputLabel: `${licenseName}`,
+            inputPlaceholder: aliasNameArg? aliasNameArg : undefined,
+            showCancelButton: true,
+        }
+
         return async () => {
             const { value: aliasName } = await Swal.fire({
-                title: "読み替えライセンス名",
-                input: "text",
-                inputLabel: `ApprovalList(知財のエクセル) : ${licenseName}`,
-                showCancelButton: true,
+                ...sawlOptionHandler
             });
             if (aliasName) {
                 const request: RequestUpdateAliasName = {
                     aliasName,
                     licenseName
                 }
-                Swal.fire(`読み替えマスターに登録します ${aliasName}`);
+                const text = aliasNameArg? '更新します' : '登録します'
+                Swal.fire(`${text} : ${aliasName}`);
                 const res = await approvalListService!.registerAliasName(request)
                 console.log({res})
+                setTimeout(()=>{
+                    window.location.reload()
+                },1000)
             }
         }
-    }
-
-    const onClickEditButton = async (licenseName: string, aliasNameArg: string) => {
-
-        const { value: aliasName } = await Swal.fire({
-            title: "修正",
-            input: "text",
-            inputLabel: `${licenseName}`,
-            text: aliasNameArg,
-            showCancelButton: true,
-        });
-        if (aliasName) {
-            const request: RequestUpdateAliasName = {
-                aliasName,
-                licenseName
-            }
-            Swal.fire(`読み替えマスターを更新します :  ${aliasName}`);
-            const res = await approvalListService!.registerAliasName(request)
-            // const res = await approvalListService!.updateAliasName(request)
-            console.log({res})
-        }
-
     }
 
     return (
@@ -110,11 +97,11 @@ export const TableComponent = (
                                 {approvalList.aliasName ?
                                     <div>
                                         <p>{approvalList.aliasName}</p>
-                                        <EditIcon onClick={() => {onClickEditButton(approvalList.licenseName, approvalList.aliasName!)}}/>
+                                        <EditIcon onClick={onClickHandlerForAlias(approvalList.licenseName, approvalList.aliasName!)}/>
                                     </div>
                                     :
                                     <CustomButton
-                                        onClick={onClickCustomButtonClosure(approvalList.licenseName)}
+                                        onClick={onClickHandlerForAlias(approvalList.licenseName)}
                                     >
                                         登録する
                                     </CustomButton>
