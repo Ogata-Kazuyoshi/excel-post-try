@@ -43,7 +43,34 @@ Resources:
                   aws:SourceIp: '13.114.22.14/32'
       BinaryMediaTypes:
         - 'multipart/form-data'
-#        - めっちゃ重要。これないとエクセル受け取れない
+  #        - めっちゃ重要。これないとエクセル受け取れない
+
+  # 下記でAPIGatewayのカスタムドメイン化できるみたいやけど試してない。ACMを事前にus-east-1で作成必要
+  # CustomDomain:
+  #   Type: AWS::ApiGateway::DomainName
+  #   Properties:
+  #     DomainName: your.custom.domain.com
+  #     RegionalCertificateArn: arn:aws:acm:us-east-1:YOUR_ACCOUNT_ID:certificate/YOUR_CERTIFICATE_ID
+  #     EndpointConfiguration:
+  #       Types:
+  #         - REGIONAL
+
+  # BasePathMapping:
+  #   Type: AWS::ApiGateway::BasePathMapping
+  #   Properties:
+  #     DomainName: !Ref CustomDomain
+  #     RestApiId: !Ref ApiGatewayApi
+  #     Stage: Prod
+
+  # Route53RecordSet:
+  #   Type: AWS::Route53::RecordSet
+  #   Properties:
+  #     HostedZoneId: YOUR_HOSTED_ZONE_ID
+  #     Name: your.custom.domain.com
+  #     Type: A
+  #     AliasTarget:
+  #       DNSName: !GetAtt CustomDomain.RegionalDomainName
+  #       HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
 
   PostExcelList:
     Type: AWS::Serverless::Function
@@ -240,4 +267,3 @@ Resources:
         Sourcemap: true
         EntryPoints:
           - controller/userAllGet.ts
-
