@@ -8,124 +8,124 @@ Parameters:
     Type: String
 
 Resources:
-#  GithubActionsRole:
-#    Type: AWS::IAM::Role
-#    Properties:
-#      RoleName: ogata-githubactions
-#      AssumeRolePolicyDocument:
-#        Version: '2012-10-17'
-#        Statement:
-#          - Effect: Allow
-#            Principal:
-#              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com'
-#            Action: sts:AssumeRoleWithWebIdentity
-#            Condition:
-#              StringEquals:
-#                'token.actions.githubusercontent.com:sub': !Sub 'repo:${GithubAccount}/${GithubRepository}:ref:refs/heads/main'
-#                'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com'
-#      ManagedPolicyArns:
-#        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
-#        - arn:aws:iam::aws:policy/AmazonECS_FullAccess
-#        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
-#        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-#      Policies:
-#        - PolicyName: ECRandECSAccess
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - ecr:GetAuthorizationToken
-#                  - ecr:BatchCheckLayerAvailability
-#                  - ecr:GetDownloadUrlForLayer
-#                  - ecr:BatchGetImage
-#                  - ecr:InitiateLayerUpload
-#                  - ecr:UploadLayerPart
-#                  - ecr:CompleteLayerUpload
-#                  - ecr:PutImage
-#                  - ecs:RegisterTaskDefinition
-#                  - ecs:DescribeTaskDefinition
-#                  - ecs:UpdateService
-#                  - ecs:DescribeServices
-#                Resource: '*'
-#        - PolicyName: CloudFormationCustom
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - cloudformation:CreateChangeSet
-#                  - cloudformation:DescribeChangeSet
-#                  - cloudformation:ExecuteChangeSet
-#                  - cloudformation:DescribeStacks
-#                Resource: '*'
-#        - PolicyName: IAMRoleManagement
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - iam:CreateRole
-#                  - iam:PutRolePolicy
-#                  - iam:AttachRolePolicy
-#                  - iam:DetachRolePolicy
-#                Resource: '*'
-#        - PolicyName: TaggingOperations
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - tag:GetResources
-#                  - tag:TagResources
-#                  - tag:UntagResources
-#                Resource: '*'
-#        - PolicyName: LambdaCreateUpdatePolicy
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - lambda:CreateFunction
-#                  - lambda:UpdateFunctionCode
-#                  - lambda:UpdateFunctionConfiguration
-#                  - lambda:GetFunction
-#                  - lambda:DeleteFunction
-#                  - lambda:TagResource # この行を追加
-#                  - lambda:UntagResource # この行も追加（将来的に必要になる可能性があります）
-#                  - lambda:AddPermission # この行を追加
-#                  - lambda:RemovePermission # この行も追加（将来的に必要になる可能性があります）
-#                  - lambda:ListTags # この行を追加
-#                Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
-#              - Effect: Allow
-#                Action:
-#                  - iam:PassRole
-#                Resource: '*'
-#        - PolicyName: APIGatewayManagementPolicy
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - apigateway:GET
-#                  - apigateway:POST
-#                  - apigateway:PUT
-#                  - apigateway:DELETE
-#                  - apigateway:PATCH
-#                  - apigateway:UpdateRestApiPolicy # この行を追加
-#                Resource:
-#                  - !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis'
-#                  - !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/*'
-#        - PolicyName: CloudFrontInvalidationPolicy
-#          PolicyDocument:
-#            Version: '2012-10-17'
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - cloudfront:CreateInvalidation
-#                  - cloudfront:GetInvalidation
-#                  - cloudfront:ListInvalidations
-#                Resource: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/*'
+  #  GithubActionsRole:
+  #    Type: AWS::IAM::Role
+  #    Properties:
+  #      RoleName: ogata-githubactions
+  #      AssumeRolePolicyDocument:
+  #        Version: '2012-10-17'
+  #        Statement:
+  #          - Effect: Allow
+  #            Principal:
+  #              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com'
+  #            Action: sts:AssumeRoleWithWebIdentity
+  #            Condition:
+  #              StringEquals:
+  #                'token.actions.githubusercontent.com:sub': !Sub 'repo:${GithubAccount}/${GithubRepository}:ref:refs/heads/main'
+  #                'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com'
+  #      ManagedPolicyArns:
+  #        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+  #        - arn:aws:iam::aws:policy/AmazonECS_FullAccess
+  #        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+  #        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+  #      Policies:
+  #        - PolicyName: ECRandECSAccess
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - ecr:GetAuthorizationToken
+  #                  - ecr:BatchCheckLayerAvailability
+  #                  - ecr:GetDownloadUrlForLayer
+  #                  - ecr:BatchGetImage
+  #                  - ecr:InitiateLayerUpload
+  #                  - ecr:UploadLayerPart
+  #                  - ecr:CompleteLayerUpload
+  #                  - ecr:PutImage
+  #                  - ecs:RegisterTaskDefinition
+  #                  - ecs:DescribeTaskDefinition
+  #                  - ecs:UpdateService
+  #                  - ecs:DescribeServices
+  #                Resource: '*'
+  #        - PolicyName: CloudFormationCustom
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - cloudformation:CreateChangeSet
+  #                  - cloudformation:DescribeChangeSet
+  #                  - cloudformation:ExecuteChangeSet
+  #                  - cloudformation:DescribeStacks
+  #                Resource: '*'
+  #        - PolicyName: IAMRoleManagement
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - iam:CreateRole
+  #                  - iam:PutRolePolicy
+  #                  - iam:AttachRolePolicy
+  #                  - iam:DetachRolePolicy
+  #                Resource: '*'
+  #        - PolicyName: TaggingOperations
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - tag:GetResources
+  #                  - tag:TagResources
+  #                  - tag:UntagResources
+  #                Resource: '*'
+  #        - PolicyName: LambdaCreateUpdatePolicy
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - lambda:CreateFunction
+  #                  - lambda:UpdateFunctionCode
+  #                  - lambda:UpdateFunctionConfiguration
+  #                  - lambda:GetFunction
+  #                  - lambda:DeleteFunction
+  #                  - lambda:TagResource # この行を追加
+  #                  - lambda:UntagResource # この行も追加（将来的に必要になる可能性があります）
+  #                  - lambda:AddPermission # この行を追加
+  #                  - lambda:RemovePermission # この行も追加（将来的に必要になる可能性があります）
+  #                  - lambda:ListTags # この行を追加
+  #                Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
+  #              - Effect: Allow
+  #                Action:
+  #                  - iam:PassRole
+  #                Resource: '*'
+  #        - PolicyName: APIGatewayManagementPolicy
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - apigateway:GET
+  #                  - apigateway:POST
+  #                  - apigateway:PUT
+  #                  - apigateway:DELETE
+  #                  - apigateway:PATCH
+  #                  - apigateway:UpdateRestApiPolicy # この行を追加
+  #                Resource:
+  #                  - !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis'
+  #                  - !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/*'
+  #        - PolicyName: CloudFrontInvalidationPolicy
+  #          PolicyDocument:
+  #            Version: '2012-10-17'
+  #            Statement:
+  #              - Effect: Allow
+  #                Action:
+  #                  - cloudfront:CreateInvalidation
+  #                  - cloudfront:GetInvalidation
+  #                  - cloudfront:ListInvalidations
+  #                Resource: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/*'
 
   LambdaExecutionRoleWithDynamoDB:
     Type: AWS::IAM::Role
@@ -152,6 +152,8 @@ Resources:
                   - dynamodb:GetItem
                   - dynamodb:Scan
                   - dynamodb:DeleteItem
+                  - dynamodb:Query # この行を追加
+                  - dynamodb:UpdateItem # この行を追加
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*'
         - PolicyName: CognitoUserPoolAccess
           PolicyDocument:
@@ -162,7 +164,6 @@ Resources:
                   - cognito-idp:AdminCreateUser
                   - cognito-idp:AdminDeleteUser
                 Resource: !Sub 'arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*'
-
 #Outputs:
 #  GithubActionsRoleArn:
 #    Description: ARN of the IAM Role for GitHub Actions

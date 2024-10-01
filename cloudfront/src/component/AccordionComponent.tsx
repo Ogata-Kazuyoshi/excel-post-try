@@ -10,7 +10,7 @@ export const AccordionComponent = () => {
     const [expanded, setExpanded] = useState<string | false>('');
     const displaySortedByAliasName = useRecoilValue(sortedByAliasListsState)
     const handleChange =
-        (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
+        (panel: string) => (_event: SyntheticEvent, newExpanded: boolean) => {
             setExpanded(newExpanded ? panel : false);
         };
 

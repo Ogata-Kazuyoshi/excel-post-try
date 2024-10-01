@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {SyntheticEvent, useState} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -14,7 +13,7 @@ export const VerticalNabs =() => {
     const teamNameLists = useRecoilValue(teamNameListState)
     const setSelectedTeam = useSetRecoilState(selectedTeamState)
 
-    const handleChange = (event: SyntheticEvent, newValue: number) => {
+    const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setSelectedTeamIndex(newValue);
         setSelectedTeam(teamNameLists[newValue])
     };

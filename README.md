@@ -159,7 +159,8 @@ make cloudfront-deploy
 - lambda関数でmultiformdataをパースするのにformidableやbusboyなどを使ったがダメだった。結果Qittaのlambda-multipart-parserを使用して出来た！！
 - コマンドラインからエクセルをポストして、DBに登録できることも確認済み
 -  license_finder report --format=csv --save=../licenses.csv
-
+- CloudFrontに貼り付けるSSL証明書は「us-east-1」じゃないとCloudFrontに貼れないの作成する場所注意！！
+- なぜか、AWSでERRORなる時は「①DynamoDBへの権限不足②RCU/WCU不足」を疑って
 
 ```zh
 make excel-post

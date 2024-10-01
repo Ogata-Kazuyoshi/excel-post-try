@@ -2,16 +2,69 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'DynamoDB table for ogata user management'
 
 Resources:
-  OgataUserTable:
+  ApprovalList:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ogata-excel
+      TableName: approval-list
       AttributeDefinitions:
         - AttributeName: id
+          AttributeType: S
+        - AttributeName: licenseName
+          AttributeType: S
+        - AttributeName: aliasName
           AttributeType: S
       KeySchema:
         - AttributeName: id
           KeyType: HASH
       ProvisionedThroughput:
-        ReadCapacityUnits: 50
-        WriteCapacityUnits: 50
+        ReadCapacityUnits: 20
+        WriteCapacityUnits: 20
+      GlobalSecondaryIndexes:
+        - IndexName: licenseName
+          KeySchema:
+            - AttributeName: licenseName
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 20
+            WriteCapacityUnits: 20
+        - IndexName: aliasName
+          KeySchema:
+            - AttributeName: aliasName
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 20
+            WriteCapacityUnits: 20
+
+  TeamList:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: team-list
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: teamName
+          AttributeType: S
+        - AttributeName: libraryName
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 20
+        WriteCapacityUnits: 20
+      GlobalSecondaryIndexes:
+        - IndexName: teamName
+          KeySchema:
+            - AttributeName: teamName
+              KeyType: HASH
+            - AttributeName: libraryName
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5

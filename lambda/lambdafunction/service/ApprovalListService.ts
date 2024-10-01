@@ -31,7 +31,6 @@ export class DefaultApprovalListService extends BaseExcelFileExtractor implement
 
         for (const data of jsonDataLists) {
             const currentRecord = await this.readCurrentLicense(data);
-
             if (currentRecord) {
                 const updateRequest: UpdateMultiColumnByPartitionKey = {
                     partitionKeyName: TablePartitioKey.APPROVALLIST,

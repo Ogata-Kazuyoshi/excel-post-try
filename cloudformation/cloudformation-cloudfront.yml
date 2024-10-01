@@ -5,6 +5,12 @@ Parameters:
   WAFWebACLArn:
     Type: String
     Description: ARN of the WAF Web ACL
+  HostZone:
+    Type: String
+  AcmArn:
+    Type: String
+  DomainName:
+    Type: String
 
 Resources:
   S3Bucket:
@@ -44,6 +50,11 @@ Resources:
         Comment: ogata-cloudfront-distribution
         DefaultRootObject: index.html
         Enabled: true
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmArn
+          SslSupportMethod: sni-only
+        Aliases:
+          - !Ref DomainName
         HttpVersion: http2
         IPV6Enabled: false
         Origins:
@@ -65,7 +76,23 @@ Resources:
             QueryString: false
             Cookies:
               Forward: none
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponsePagePath: /index.html
+            ResponseCode: 200
+            ErrorCachingMinTTL: 0
         WebACLId: !Ref WAFWebACLArn
+
+  Route53Record:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostZone
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # CloudFrontのグローバルホストゾーンID（固定値）
+        EvaluateTargetHealth: false
 
 Outputs:
   CloudFrontDomainName:
