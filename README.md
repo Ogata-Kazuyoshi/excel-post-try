@@ -171,3 +171,20 @@ make cloudfront-deploy
 # 参考
 
 [lambdaでmultipleformをパース](https://qiita.com/Occhiii623/items/a66a689b28d2730e0130)
+
+# fosslightの件
+
+```zh
+   brew install pipx
+   pipx ensurepath
+```
+
+```zh
+   pipx install fosslight-dependency
+```
+
+- パスを通す
+
+
+
+

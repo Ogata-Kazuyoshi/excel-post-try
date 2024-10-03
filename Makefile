@@ -74,6 +74,10 @@ excel-post:
          -F "file=@./try-data.xlsx"
 # 	curl -X POST http://localhost:3000/api/excel -v \
 
+create-csv:
+	cd cloudfront && license_finder report --format=csv --columns=name version licenses homepage --save=../licenses.csv
+
+
 create-license:
 	cd cloudfront && license_finder report --format=csv --save=../licenses.csv
 	curl -X POST http://localhost:3000/api/teamLists/tempTeam2 -v \
