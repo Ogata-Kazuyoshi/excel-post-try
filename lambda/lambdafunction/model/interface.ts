@@ -13,6 +13,12 @@ export enum CSVList {
     ARIASNAME= 2
 }
 
+export enum LicenseCheker {
+    LIBRARYNAME = 0,
+    ARIASNAME = 1,
+    GITREPOSITORY = 2
+}
+
 export interface ExcelEntity {
     id: string
     licenseName: string
@@ -47,4 +53,12 @@ export interface ResponseTeamList extends TeamListEntity{
 
 export enum CheckResult {
     UNKNOWN = 'unknown'
+}
+
+export interface LibraryEntity {
+    id: string,
+    libraryName: string,
+    aliasName: string,
+    gitRepository: string,
+    ownerYear: string
 }

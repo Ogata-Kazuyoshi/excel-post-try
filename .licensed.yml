@@ -1,0 +1,11 @@
+#好きな名前
+name: 'cloudfront'
+
+#対象フォルダまでのパス
+source_path: './cloudfront'
+
+#Cache後のOutput
+cache_path: './cache'
+
+sources:
+  npm: true

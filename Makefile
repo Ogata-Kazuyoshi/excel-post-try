@@ -86,3 +86,10 @@ create-license:
 create-team-list:
 	curl -X POST http://localhost:3000/api/teamLists/tempTeam -v \
          -F "file=@./licenses.csv"
+
+create-license-checker:
+	npx license-checker --csv --out license-checker.csv --start cloudfront
+
+create-library-table:
+	curl -X POST http://localhost:3000/api/libraries -v \
+         -F "file=@./license-checker.csv"

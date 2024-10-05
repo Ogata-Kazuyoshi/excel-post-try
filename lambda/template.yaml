@@ -240,6 +240,34 @@ Resources:
         EntryPoints:
           - controller/approvalList/createAliasRecord.ts
 
+  PostLibraryCSV:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdafunction/
+      Handler: postLibraryLists.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Role:
+        Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/ogata-lambdaExecutionRole'
+      Events:
+        postLibraryList:
+          Type: Api
+          Properties:
+            Path: /api/libraries
+            Method: post
+            RestApiId: !Ref ApiGatewayApi
+      Timeout: 120
+      MemorySize: 256
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - controller/libraryList/postLibraryLists.ts
+
   LambdaUserAllGet:
     Type: AWS::Serverless::Function
     Properties:

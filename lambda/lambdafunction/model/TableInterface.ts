@@ -1,6 +1,7 @@
 export enum TableName {
     APPROVALLIST = 'approval-list',
-    TEAMLIST = 'team-list'
+    TEAMLIST = 'team-list',
+    LICENSELIST = 'license-list'
 }
 
 export enum TablePartitioKey {

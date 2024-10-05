@@ -186,5 +186,49 @@ make cloudfront-deploy
 - パスを通す
 
 
+# github lisenced
+
+1. cmakeのインストール
+```zh
+brew install cmake 
+```
+
+2. bundle initする。対象のルートディレクトリで
+```zh
+bundle init 
+```
+
+3. Gemfileの中を下記のように書く
+```
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# gem "rails"
+gem 'licensed', group: 'development'
+```
+
+4. ルートディレクトリに、「.licensed.yml」を作成して下記のように記載
+```
+#好きな名前
+name: 'cloudfront'
+
+#対象フォルダまでのパス
+source_path: './cloudfront'
+
+#Cache後のOutput
+cache_path: './cache'
+
+sources:
+  npm: true
+```
+
+5. ライセンスチェックを実行。./cacheにyamlが生成される
+```
+licensed cache
+```
+
+
+
 
 

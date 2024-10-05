@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+./vendor
+./cache
+./.bundle
+
 #.idea
 
 # Editor directories and files
